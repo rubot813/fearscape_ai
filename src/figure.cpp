@@ -21,7 +21,7 @@ bool figure_c::set_from_cell_field( cell_field_c *cell_field, settings_s *settin
 		return 0;
 	}
 
-	// Ïðåîáðàçîâàíèå ôèãóðû â áèòîâîå ïðåäñòàâëåíèå
+	// Ñ•Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ„Ð¸Ð³ÑƒÑ€Ñ‹ Ð² Ð±Ð¸Ñ‚Ð¾Ð²Ð¾Ðµ Ð¿Ñ€ÐµÐ´ÑÑ‚Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ
 	uint16_t bit_figure;
 	if ( cell_field->convert_to_16bit( &bit_figure ) ) {
 		switch ( bit_figure ) {

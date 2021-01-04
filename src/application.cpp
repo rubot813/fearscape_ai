@@ -8,7 +8,7 @@ application::application( void ) {
 	} else
 		std::cout << "Application init done!\n";
 
-	// Главный цикл
+	// Р“Р»Р°РІРЅС‹Р№ С†РёРєР»
 	while( _sf_render_window->isOpen( ) ) {
 		while( _sf_render_window->pollEvent( *_sf_event ) ) {
 			switch( _sf_event->type ) {
@@ -37,7 +37,7 @@ application::~application( void ) {
 }
 
 bool application::_init( void ) {
-	// Флаг успешной инициализации
+	// Р¤Р»Р°Рі СѓСЃРїРµС€РЅРѕР№ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
 	bool ok_flag = 1;
 
 	// SFML
@@ -46,7 +46,7 @@ bool application::_init( void ) {
 	_sf_rect_shape = new sf::RectangleShape;
 	_sf_event = new sf::Event;
 
-	if ( _sf_font->loadFromFile( "Anonymous_Pro_B.ttf" ) ) {
+	if ( _sf_font->loadFromFile( "resource/Anonymous_Pro_B.ttf" ) ) {
 		_sf_text->setFont( *_sf_font );
 		_sf_text->setFillColor( sf::Color::White );
 		_sf_text->setCharacterSize( 14 );
@@ -63,10 +63,10 @@ bool application::_init( void ) {
 		_window_hwnd = FindWindow( 0, working_app_name.c_str( ) );	// from global
 	std::cout << "Application found!\n";
 
-	// Разворачивание окна на передний план
+	// Р Р°Р·РІРѕСЂР°С‡РёРІР°РЅРёРµ РѕРєРЅР° РЅР° РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
 	SetForegroundWindow( _window_hwnd );
 
-	// Цвета блоков
+	// Р¦РІРµС‚Р° Р±Р»РѕРєРѕРІ
 	_online_tetris_settings = new settings_s;
 	_online_tetris_settings->used_cells.push_back( { sf::Color( 192, 19, 2 ) } );	// light red
 	_online_tetris_settings->used_cells.push_back( { sf::Color( 217, 71, 30 ) } );	// red
@@ -88,14 +88,14 @@ bool application::_init( void ) {
 	_online_tetris_settings->used_cells.push_back( { sf::Color( 249, 236, 35 ) } );	// yellow
 	_online_tetris_settings->used_cells.push_back( { sf::Color( 251, 191, 32 ) } );
 
-	// Цвета фона
+	// Р¦РІРµС‚Р° С„РѕРЅР°
 	_online_tetris_settings->free_cells.push_back( { sf::Color( 255, 255, 255 ) } );// background
 	_online_tetris_settings->free_cells.push_back( { sf::Color( 223, 223, 223 ) } );// shadow
 
 	_online_tetris_settings->free_cells.push_back( { sf::Color( 235, 234, 240 ) } );
 	_online_tetris_settings->free_cells.push_back( { sf::Color( 235, 234, 239 ) } );
 
-	// Инициализация внутренних классов
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РІРЅСѓС‚СЂРµРЅРЅРёС… РєР»Р°СЃСЃРѕРІ
 	_pf = new pixel_field_c( sf::Vector2i( global_field_size_x, global_field_size_y ) );
 	_cf = new cell_field_c( sf::Vector2i( global_field_size_x, global_field_size_y ) );
 
@@ -106,18 +106,18 @@ bool application::_init( void ) {
 }
 
 void application::_logic( void ) {
-	// Взятие поля цветов с экрана
+	// Р’Р·СЏС‚РёРµ РїРѕР»СЏ С†РІРµС‚РѕРІ СЃ СЌРєСЂР°РЅР°
 	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( screen_start_field_x, screen_start_field_y ),
 										sf::Vector2i( screen_block_size, screen_block_size ) );
 
-	// Конвертирование поля цветов в поле ячеек с игнорированием двух линий сверху поля
+	// РљРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёРµ РїРѕР»СЏ С†РІРµС‚РѕРІ РІ РїРѕР»Рµ СЏС‡РµРµРє СЃ РёРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµРј РґРІСѓС… Р»РёРЅРёР№ СЃРІРµСЂС…Сѓ РїРѕР»СЏ
 	if ( !_pf->convert_to_cellfield( _cf, _online_tetris_settings, 2 ) )
 		std::cout << "_logic -> convert field error";
 
-	// Взятие поля цветов фигуры с экрана
+	// Р’Р·СЏС‚РёРµ РїРѕР»СЏ С†РІРµС‚РѕРІ С„РёРіСѓСЂС‹ СЃ СЌРєСЂР°РЅР°
 	_fill_pixel_field_from_screen( _figure_pf,	sf::Vector2i( screen_start_figure_x, screen_start_figure_y ),
 												sf::Vector2i( screen_block_size, screen_block_size ) );
-	// Конвертирование поля цветов в поле ячеек
+	// РљРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёРµ РїРѕР»СЏ С†РІРµС‚РѕРІ РІ РїРѕР»Рµ СЏС‡РµРµРє
 	if ( !_figure_pf->convert_to_cellfield( _figure_cf, _online_tetris_settings ) )
 		std::cout << "Convert figure error";
 	if ( !_figure->set_from_cell_field( _figure_cf, _online_tetris_settings ) )
@@ -173,19 +173,19 @@ void application::_render( void ) {
 
 void application::_fill_pixel_field_from_screen( pixel_field_c *pixel_field, sf::Vector2i start_pos, sf::Vector2i offset ) {
 
-	// Получение контекста устройства экрана
+	// РџРѕР»СѓС‡РµРЅРёРµ РєРѕРЅС‚РµРєСЃС‚Р° СѓСЃС‚СЂРѕР№СЃС‚РІР° СЌРєСЂР°РЅР°
 	auto window_dc_space = GetDC( NULL );
 
-	// Получение размера поля
+	// РџРѕР»СѓС‡РµРЅРёРµ СЂР°Р·РјРµСЂР° РїРѕР»СЏ
 	sf::Vector2i f_size = pixel_field->get_size( );
 
-	// Проход по матрице
+	// РџСЂРѕС…РѕРґ РїРѕ РјР°С‚СЂРёС†Рµ
 	for ( int x = 0; x < f_size.x; x++ ) {
 		for ( int y = 0; y < f_size.y; y++ ) {
-			// Получение значения цвета пикселя
+			// РџРѕР»СѓС‡РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ С†РІРµС‚Р° РїРёРєСЃРµР»СЏ
 			uint32_t pixel = GetPixel( window_dc_space, start_pos.x + offset.x * x,
 														start_pos.y + offset.y * y );
-			// Запись пикселя в поле
+			// Р—Р°РїРёСЃСЊ РїРёРєСЃРµР»СЏ РІ РїРѕР»Рµ
 			pixel_field->set( sf::Vector2i( x, y ),
 							  sf::Color( GetRValue( pixel ),
 										 GetGValue( pixel ),
@@ -193,7 +193,7 @@ void application::_fill_pixel_field_from_screen( pixel_field_c *pixel_field, sf:
 		}
 	}
 
-	// Закрытие контекста экрана
+	// Р—Р°РєСЂС‹С‚РёРµ РєРѕРЅС‚РµРєСЃС‚Р° СЌРєСЂР°РЅР°
 	ReleaseDC( NULL, window_dc_space );
 }
 

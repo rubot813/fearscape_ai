@@ -40,14 +40,14 @@ bool cell_field_c::set( sf::Vector2i pos, cell_t val ) {
 
 bool cell_field_c::convert_to_16bit( uint16_t *val ) {
 
-	// Поле должно быть размером 4 x 4
+	// РџРѕР»Рµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ СЂР°Р·РјРµСЂРѕРј 4 x 4
 	if ( _field_size.x != 4 ||
 		 _field_size.y != 4 ) {
 		std::cout << "Error at cell_field_c::convert_to_16bit";
 		return 0;
 	}
 
-	// Проход по битам числа
+	// РџСЂРѕС…РѕРґ РїРѕ Р±РёС‚Р°Рј С‡РёСЃР»Р°
 	for ( unsigned i = 0; i < 16; i++ ) {
 		*val ^= ( -( _field[ i ] ) ^ *val ) & ( 1UL << i );
 	}
