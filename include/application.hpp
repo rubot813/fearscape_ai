@@ -57,7 +57,7 @@ class application {
 		figure_c		*_figure;		// Тип фигуры
 
 		// Настроки цветов для online-tetris.ru
-		settings_s 		*_online_tetris_settings;
+		cell_field_c::settings_s 		*_online_tetris_settings;
 };
 
 #endif // APPLICATION_HPP

@@ -24,7 +24,7 @@ class figure_c {
 		// Метод определения типа фигуры из cell_field
 		// Размер поля должен быть 4x4
 		// Вернет true если тип определен, иначе false ( тип unknown )
-		bool set_from_cell_field( cell_field_c *cell_field,settings_s *settings );
+		bool set_from_cell_field( cell_field_c *cell_field, cell_field_c::settings_s *settings );
 
 		// Получение типа фигуры
 		type_e get_type( void );

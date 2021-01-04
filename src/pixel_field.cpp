@@ -5,8 +5,7 @@ pixel_field_c::pixel_field_c( sf::Vector2i field_size ) {
 	if ( field_size.x > 0 && field_size.y > 0 ) {
 		_field_size = field_size;
 		_field.resize( field_size.x * field_size.y );
-	}
-	else
+	} else
 		std::cout << "FATAL ERROR on pixel_field_c";
 }
 
@@ -25,21 +24,21 @@ unsigned pixel_field_c::get_count( void ) {
 sf::Color pixel_field_c::get( sf::Vector2i pos ) {
 	sf::Color col = sf::Color::Black;
 	if ( pos.x < _field_size.x ||
-		 pos.y < _field_size.y )
+	        pos.y < _field_size.y )
 		col = _field.at( pos.x + pos.y * _field_size.x );
 	return col;
 }
 
 bool pixel_field_c::set( sf::Vector2i pos, sf::Color col ) {
 	if ( pos.x < _field_size.x ||
-		 pos.y < _field_size.y ) {
+	        pos.y < _field_size.y ) {
 		_field.at( pos.x + pos.y * _field_size.x ) = col;
 		return true;
 	}
 	return false;
 }
 
-bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, settings_s *settings, unsigned up_lines_ignored ) {
+bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c::settings_s *settings, unsigned up_lines_ignored ) {
 	if ( !cell_field ) {
 		std::cout << "pixel_field_c::convert_to_cellfield -> received nullptr!";
 		return 0;
@@ -49,7 +48,7 @@ bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, settings_s *
 
 	// Размеры CF и PF должны совпадать
 	if ( cf_size.x != _field_size.x ||
-		 cf_size.y != _field_size.y ) {
+	        cf_size.y != _field_size.y ) {
 		std::cout << "pixel_field_c::convert_to_cellfield -> cf size != pf size!";
 		return 0;
 	}

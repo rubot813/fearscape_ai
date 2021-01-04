@@ -33,7 +33,16 @@ application::application( void ) {
 }
 
 application::~application( void ) {
-	// nope
+	delete _sf_font;
+	delete _sf_text;
+	delete _sf_rect_shape;
+	delete _sf_event;
+	delete _sf_render_window;
+	delete _online_tetris_settings;
+	delete _pf;
+	delete _cf;
+	delete _figure_cf;
+	delete _figure_pf;
 }
 
 bool application::_init( void ) {
@@ -67,7 +76,7 @@ bool application::_init( void ) {
 	SetForegroundWindow( _window_hwnd );
 
 	// Цвета блоков
-	_online_tetris_settings = new settings_s;
+	_online_tetris_settings = new cell_field_c::settings_s;
 	_online_tetris_settings->used_cells.push_back( { sf::Color( 192, 19, 2 ) } );	// light red
 	_online_tetris_settings->used_cells.push_back( { sf::Color( 217, 71, 30 ) } );	// red
 
@@ -108,7 +117,7 @@ bool application::_init( void ) {
 void application::_logic( void ) {
 	// Взятие поля цветов с экрана
 	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( screen_start_field_x, screen_start_field_y ),
-										sf::Vector2i( screen_block_size, screen_block_size ) );
+	                               sf::Vector2i( screen_block_size, screen_block_size ) );
 
 	// Конвертирование поля цветов в поле ячеек с игнорированием двух линий сверху поля
 	if ( !_pf->convert_to_cellfield( _cf, _online_tetris_settings, 2 ) )
@@ -116,7 +125,7 @@ void application::_logic( void ) {
 
 	// Взятие поля цветов фигуры с экрана
 	_fill_pixel_field_from_screen( _figure_pf,	sf::Vector2i( screen_start_figure_x, screen_start_figure_y ),
-												sf::Vector2i( screen_block_size, screen_block_size ) );
+	                               sf::Vector2i( screen_block_size, screen_block_size ) );
 	// Конвертирование поля цветов в поле ячеек
 	if ( !_figure_pf->convert_to_cellfield( _figure_cf, _online_tetris_settings ) )
 		std::cout << "Convert figure error";
@@ -184,12 +193,12 @@ void application::_fill_pixel_field_from_screen( pixel_field_c *pixel_field, sf:
 		for ( int y = 0; y < f_size.y; y++ ) {
 			// Получение значения цвета пикселя
 			uint32_t pixel = GetPixel( window_dc_space, start_pos.x + offset.x * x,
-														start_pos.y + offset.y * y );
+			                           start_pos.y + offset.y * y );
 			// Запись пикселя в поле
 			pixel_field->set( sf::Vector2i( x, y ),
-							  sf::Color( GetRValue( pixel ),
-										 GetGValue( pixel ),
-										 GetBValue( pixel ) ) );
+			                  sf::Color( GetRValue( pixel ),
+			                             GetGValue( pixel ),
+			                             GetBValue( pixel ) ) );
 		}
 	}
 

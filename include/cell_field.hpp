@@ -1,7 +1,7 @@
 #ifndef CELL_FIELD_HPP
 #define CELL_FIELD_HPP
 
-#include <stdint-gcc.h>
+#include <stdint.h>
 #include <iostream>
 #include <vector>
 
@@ -13,6 +13,15 @@ class cell_field_c {
 		// Обязательно создание с размерами поля
 		cell_field_c( sf::Vector2i field_size );
 		~cell_field_c( void );
+
+		// Структура настроек для поля ячеек
+		struct settings_s {
+			// Набор цветов заполненных ячеек
+			std::vector< sf::Color > used_cells;
+
+			// Набор цветов пустых ячеек
+			std::vector< sf::Color > free_cells;
+		};
 
 		// Метод возвращает размер поля
 		sf::Vector2i get_size( void );

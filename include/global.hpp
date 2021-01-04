@@ -4,9 +4,11 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 
-// Константы
+// Размеры поля
 const unsigned	global_field_size_x		= 10;
 const unsigned	global_field_size_y		= 20;
+
+// Размеры превью фигуры ( не менять, описаны в вики )
 const unsigned	global_figure_size_x	= 4;
 const unsigned	global_figure_size_y	= 4;
 
@@ -32,29 +34,5 @@ const std::string working_app_name = "Тетрис классический - и
 typedef	bool	cell_t;
 const bool		USED_CELL = true;
 const bool		FREE_CELL = false;
-
-// Структура настроек для поля ячеек
-struct settings_s {
-	// Набор цветов заполненных ячеек
-	std::vector< sf::Color > used_cells;
-
-	// Набор цветов пустых ячеек
-	std::vector< sf::Color > free_cells;
-};
-
-// Структура варианта перемещения фигуры
-struct move_variant_s {
-	// Позиция относительно начального положения фигуры ( на верху экрана и по центру )
-	// Положительное значение - перемещение направо, отрицательное значение - перемещение налево
-	// >0 перемещение на pos клеток направо
-	// <0 перемешение на -pos клеток налево
-	int8_t	position;
-
-	// 0 - без вращения
-	// 1 - 90 градусов по часовой
-	// 2 - 180 градусов по часовой
-	// 3 - 270 градусов по часовой
-	uint8_t rotation;
-};
 
 #endif // GLOBAL_HPP_INCLUDED

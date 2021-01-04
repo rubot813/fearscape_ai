@@ -8,7 +8,7 @@ figure_c::~figure_c( void ) {
 	// np
 }
 
-bool figure_c::set_from_cell_field( cell_field_c *cell_field, settings_s *settings ) {
+bool figure_c::set_from_cell_field( cell_field_c *cell_field, cell_field_c::settings_s *settings ) {
 	if ( !cell_field ) {
 		std::cout << "Error: figure_s::set_from_cell_field is null";
 		return 0;
@@ -16,7 +16,7 @@ bool figure_c::set_from_cell_field( cell_field_c *cell_field, settings_s *settin
 
 	sf::Vector2i cf_size = cell_field->get_size( );
 	if ( cf_size.x != 4 ||
-		 cf_size.y != 4 ) {
+	        cf_size.y != 4 ) {
 		std::cout << "Error: figure_s::set_from_cell_field wrong size";
 		return 0;
 	}
