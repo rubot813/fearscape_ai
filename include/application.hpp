@@ -6,6 +6,7 @@
 #include <winuser.h>	// Window focus
 
 #include "pixel_field.hpp"
+#include "tetris_ai.hpp"
 #include "figure.hpp"
 
 /*
@@ -45,16 +46,21 @@ class application {
 		// Дескриптор окна, сам является указателем
 		HWND				_window_hwnd;
 
+		// Указатель на экземпляр класса ИИ
+		tetris_ai_c				*_tetris_ai;
+		std::vector< uint8_t >	_field_height;
+		uint8_t					_field_holes;
+
 		// Переменные поля, с которым работаем
 		// обновляются каждую итерацию
-		pixel_field_c	*_pf;		// Цвета
-		cell_field_c	*_cf;		// Значения ячеек
+		pixel_field_c		*_pf;		// Цвета
+		cell_field_c		*_cf;		// Значения ячеек
 
 		// В данной реализации AI знает только о текущей фигуре
 		// Переменные фигуры
-		pixel_field_c	*_figure_pf;	// Цвета
-		cell_field_c	*_figure_cf;	// Значения ячеек
-		figure_c		*_figure;		// Тип фигуры
+		pixel_field_c		*_figure_pf;	// Цвета
+		cell_field_c		*_figure_cf;	// Значения ячеек
+		figure_c			*_figure;		// Тип фигуры
 
 		// Настроки цветов для online-tetris.ru
 		cell_field_c::settings_s 		*_online_tetris_settings;

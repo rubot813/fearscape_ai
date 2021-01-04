@@ -43,6 +43,7 @@ application::~application( void ) {
 	delete _cf;
 	delete _figure_cf;
 	delete _figure_pf;
+	delete _tetris_ai;
 }
 
 bool application::_init( void ) {
@@ -50,10 +51,10 @@ bool application::_init( void ) {
 	bool ok_flag = 1;
 
 	// SFML
-	_sf_font = new sf::Font;
-	_sf_text = new sf::Text;
-	_sf_rect_shape = new sf::RectangleShape;
-	_sf_event = new sf::Event;
+	_sf_font		= new sf::Font;
+	_sf_text		= new sf::Text;
+	_sf_rect_shape	= new sf::RectangleShape;
+	_sf_event		= new sf::Event;
 
 	if ( _sf_font->loadFromFile( "resource/Anonymous_Pro_B.ttf" ) ) {
 		_sf_text->setFont( *_sf_font );
@@ -111,14 +112,17 @@ bool application::_init( void ) {
 	_figure_pf = new pixel_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
 	_figure_cf = new cell_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
 
+	// Инициализация ИИ
+	_tetris_ai = new tetris_ai_c;
+
 	return ok_flag;
 }
 
 void application::_logic( void ) {
+
 	// Взятие поля цветов с экрана
 	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( screen_start_field_x, screen_start_field_y ),
 	                               sf::Vector2i( screen_block_size, screen_block_size ) );
-
 	// Конвертирование поля цветов в поле ячеек с игнорированием двух линий сверху поля
 	if ( !_pf->convert_to_cellfield( _cf, _online_tetris_settings, 2 ) )
 		std::cout << "_logic -> convert field error";
@@ -131,11 +135,17 @@ void application::_logic( void ) {
 		std::cout << "Convert figure error";
 	if ( !_figure->set_from_cell_field( _figure_cf, _online_tetris_settings ) )
 		std::cout << "Set from cell figure error";
+	else {
+		// Если фигура определена
+		_field_height	= _tetris_ai->_calculate_height( _cf );
+		_field_holes	= _tetris_ai->_calculate_holes( _cf );
+	}
 }
 
 void application::_render( void ) {
 	// Clear
 	_sf_render_window->clear( sf::Color::Black );
+	std::string buf_str;
 
 	// Render pixel field
 	_render_text( sf::Vector2f( 0.0f, 0.0f ), "raw pix field:" );
@@ -162,19 +172,44 @@ void application::_render( void ) {
 			_sf_render_window->draw( *_sf_rect_shape );
 		}
 
+	// Render figure value
+	buf_str = "value: ";
+	buf_str += _figure->get_type_char( );
+	_render_text( sf::Vector2f( 9.0f, 212.0f ), buf_str );
+
 	// Render figure
-	_render_text( sf::Vector2f( 9.0f, 215.0f ), "next figure:" );
+	_render_text( sf::Vector2f( 9.0f, 225.0f ), "next figure:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
 	for ( unsigned x = 0; x < global_figure_size_x; x++ )
 		for ( unsigned y = 0; y < global_figure_size_y; y++ ) {
-			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 35.0f, y * 10.0f + 235.0f ) );
+			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 35.0f, y * 10.0f + 245.0f ) );
 			_sf_rect_shape->setFillColor( _figure_pf->get( sf::Vector2i( x, y ) ) );
 			_sf_render_window->draw( *_sf_rect_shape );
 		}
 
-	std::string buf_str = "value: ";
-	buf_str += _figure->get_type_char( );
-	_render_text( sf::Vector2f( 9.0f, 275.0f ), buf_str );
+	// Render height line
+	_render_text( sf::Vector2f( 78.0f, 285.0f ), "height:" );
+	buf_str.clear( );
+	for ( unsigned i = 0; i < _field_height.size( ); i++ )
+		buf_str += std::to_string( _field_height.at( i ) ) + ",";
+	buf_str.erase( buf_str.size( ) - 1 );
+	_sf_text->setPosition( sf::Vector2f( 0.0f, 300.0f ) );
+	_sf_text->setString( buf_str );
+	_sf_render_window->draw( *_sf_text );
+
+	// Render field size
+	buf_str.clear( );
+	buf_str += "x size: " + std::to_string( global_field_size_x );
+	_render_text( sf::Vector2f( 120.0f, 225.0f ), buf_str );
+
+	buf_str.clear( );
+	buf_str += "y size: " + std::to_string( global_field_size_y );
+	_render_text( sf::Vector2f( 120.0f, 237.0f ), buf_str );
+
+	// Render count of holes
+	buf_str.clear( );
+	buf_str += "holes: " + std::to_string( _field_holes );
+	_render_text( sf::Vector2f( 120.0f, 249.0f ), buf_str );
 
 	// double buff
 	_sf_render_window->display( );

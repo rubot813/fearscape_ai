@@ -26,7 +26,7 @@ class pixel_field_c {
 		// Принимает указатель на поле ячеек и структуру настроек конвертирования
 		// Возвращает true если все успешно
 		// Здесь можно добавить реализации для разных программ
-	bool convert_to_cellfield( cell_field_c * cell_field, cell_field_c::settings_s * settings, unsigned up_lines_ignored = 0 );
+		bool convert_to_cellfield( cell_field_c * cell_field, cell_field_c::settings_s * settings, unsigned up_lines_ignored = 0 );
 
 	private:
 		// Поле = вектор
