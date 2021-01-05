@@ -136,9 +136,14 @@ void application::_logic( void ) {
 	if ( !_figure->set_from_cell_field( _figure_cf, _online_tetris_settings ) )
 		std::cout << "Set from cell figure error";
 	else {
-		// Если фигура определена
-		_field_height	= _tetris_ai->_calculate_height( _cf );
-		_field_holes	= _tetris_ai->_calculate_holes( _cf );
+		// Если фигура успешно определена
+
+		// Определение перемещения и вращения фигуры по одному из алгоритмов AI
+		_move_variant	= _tetris_ai->ai_calc_bm_noholes( _cf, _figure );
+
+		// После расчета хода можно взять следующие параметры
+		_field_height	= _tetris_ai->get_current_height( );
+		_field_holes	= _tetris_ai->get_current_holes_count( );
 	}
 }
 
@@ -190,12 +195,17 @@ void application::_render( void ) {
 	// Render height line
 	_render_text( sf::Vector2f( 78.0f, 285.0f ), "height:" );
 	buf_str.clear( );
-	for ( unsigned i = 0; i < _field_height.size( ); i++ )
-		buf_str += std::to_string( _field_height.at( i ) ) + ",";
-	buf_str.erase( buf_str.size( ) - 1 );
 	_sf_text->setPosition( sf::Vector2f( 0.0f, 300.0f ) );
-	_sf_text->setString( buf_str );
-	_sf_render_window->draw( *_sf_text );
+	if ( _field_height ) {
+		for ( unsigned i = 0; i < _field_height->size( ); i++ )
+		buf_str += std::to_string( _field_height->at( i ) ) + ",";
+		buf_str.erase( buf_str.size( ) - 1 );
+		_sf_text->setString( buf_str );
+		_sf_render_window->draw( *_sf_text );
+	} else {
+		_sf_text->setString( "no height received" );
+		_sf_render_window->draw( *_sf_text );
+	}
 
 	// Render field size
 	buf_str.clear( );

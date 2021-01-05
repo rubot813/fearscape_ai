@@ -12,8 +12,19 @@ std::vector< uint8_t >* tetris_ai_c::get_current_height( void ) {
 	return &_height;
 }
 
+uint8_t	tetris_ai_c::get_current_holes_count( void ) {
+	return _holes;
+}
+
 tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_field, figure_c *figure ) {
-	// Расчет высоты поля
+	// Расчет высот столбцов поля
+	_height = _calculate_height( cell_field );
+
+	// Расчет количества отверстий
+	_holes = _calculate_holes( cell_field );
+
+	move_variant_s mv;
+	return mv;
 }
 
 std::vector< uint8_t > tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
@@ -59,6 +70,5 @@ uint8_t tetris_ai_c::_calculate_holes( cell_field_c *cell_field ) {
 		}
 	}
 	return holes;
-
 }
 

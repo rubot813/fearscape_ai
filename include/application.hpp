@@ -48,8 +48,15 @@ class application {
 
 		// Указатель на экземпляр класса ИИ
 		tetris_ai_c				*_tetris_ai;
-		std::vector< uint8_t >	_field_height;
+
+		// Значения высот столбцов поля
+		std::vector< uint8_t >	*_field_height;
+
+		// Количество отверстий в поле
 		uint8_t					_field_holes;
+
+		// Вариант перемещения фигуры
+		tetris_ai_c::move_variant_s _move_variant;
 
 		// Переменные поля, с которым работаем
 		// обновляются каждую итерацию
