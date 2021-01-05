@@ -36,6 +36,8 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_
 	// сдвигаем фигуру направо, пока можем
 	// в начало цикла
 
+
+
 	return move_variant;
 }
 
