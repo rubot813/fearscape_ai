@@ -49,7 +49,7 @@ class application {
 		tetris_ai_c				*_tetris_ai;
 
 		// Значения высот столбцов поля
-		std::vector< uint8_t >	*_field_height;
+		tetris_ai_c::height_s	*_field_height;
 
 		// Количество отверстий в поле
 		uint8_t					_field_holes;

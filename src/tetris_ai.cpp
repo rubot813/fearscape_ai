@@ -1,14 +1,14 @@
 #include "tetris_ai.hpp"
 
 tetris_ai_c::tetris_ai_c( void ) {
-	_height.clear( );
+	_height.data.clear( );
 }
 
 tetris_ai_c::~tetris_ai_c( void ) {
 	// np
 }
 
-std::vector< uint8_t >* tetris_ai_c::get_current_height( void ) {
+tetris_ai_c::height_s* tetris_ai_c::get_current_height( void ) {
 	return &_height;
 }
 
@@ -41,11 +41,12 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_
 	return move_variant;
 }
 
-std::vector< uint8_t > tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
+tetris_ai_c::height_s tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
 	// Создание поля и задание размера исходя из ширины поля
-	std::vector< uint8_t > height;
+	height_s height;
 	sf::Vector2i field_size = cell_field->get_size( );
-	height.resize( field_size.x, 0 );
+	height.data.resize( field_size.x, 0 );
+	height.valid = 1;
 
 	// Проход по полю
 	// Слева направо 0 .. n
@@ -53,7 +54,7 @@ std::vector< uint8_t > tetris_ai_c::_calculate_height( cell_field_c *cell_field 
 		// Сверху вниз 0 .. n
 		for ( uint8_t y = 0; y < field_size.y; y++ ) {
 			if ( cell_field->get( sf::Vector2i( x, y ) ) ) {
-				height.at( x ) = field_size.y - y;
+				height.data.at( x ) = field_size.y - y;
 				break;
 			}
 		}

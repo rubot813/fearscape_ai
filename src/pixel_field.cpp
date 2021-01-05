@@ -6,7 +6,7 @@ pixel_field_c::pixel_field_c( sf::Vector2i field_size ) {
 		_field_size = field_size;
 		_field.resize( field_size.x * field_size.y );
 	} else
-		std::cout << "FATAL ERROR on pixel_field_c";
+		std::cout << "FATAL ERROR on pixel_field_c\n";
 }
 
 pixel_field_c::~pixel_field_c( void ) {
@@ -27,7 +27,7 @@ sf::Color pixel_field_c::get( sf::Vector2i pos ) {
 	        pos.y < _field_size.y )
 		col = _field.at( pos.x + pos.y * _field_size.x );
 	else
-		std::cout << __PRETTY_FUNCTION__ << " -> error";
+		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
 	return col;
 }
 
@@ -37,13 +37,13 @@ bool pixel_field_c::set( sf::Vector2i pos, sf::Color col ) {
 		_field.at( pos.x + pos.y * _field_size.x ) = col;
 		return true;
 	} else
-		std::cout << __PRETTY_FUNCTION__ << " -> error";
+		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
 	return false;
 }
 
 bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c::settings_s *settings, unsigned up_lines_ignored ) {
 	if ( !cell_field ) {
-		std::cout << __PRETTY_FUNCTION__ << " -> nullptr error";
+		std::cout << __PRETTY_FUNCTION__ << " -> nullptr error\n";
 		return 0;
 	}
 	// Размер cell_field
@@ -52,7 +52,7 @@ bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c
 	// Размеры CF и PF должны совпадать
 	if ( cf_size.x != _field_size.x ||
 	        cf_size.y != _field_size.y ) {
-		std::cout << __PRETTY_FUNCTION__ << " -> size error";
+		std::cout << __PRETTY_FUNCTION__ << " -> size error\n";
 		return 0;
 	}
 
@@ -90,8 +90,8 @@ bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c
 			}	// ifn contains
 
 			// Не определили тип по всем контейнерам
-			if ( !contatins )
-				std::cout << "cannot found cell type with color " << ( unsigned )pfc.r << ", " << ( unsigned )pfc.g << ", " << ( unsigned )pfc.b << "\n";
+			// if ( !contatins )
+			// 	std::cout << "cannot found cell type with color " << ( unsigned )pfc.r << ", " << ( unsigned )pfc.g << ", " << ( unsigned )pfc.b << "\n";
 
 			// Установка типа ячейки
 			cell_field->set( sf::Vector2i( x, y ), cfv );

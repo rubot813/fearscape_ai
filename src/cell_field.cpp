@@ -5,7 +5,7 @@ cell_field_c::cell_field_c( sf::Vector2i field_size ) {
 		_field_size = field_size;
 		_field.resize( field_size.x * field_size.y );
 	} else
-		std::cout << "FATAL ERROR on cell_field_c";
+		std::cout << "FATAL ERROR on cell_field_c\n";
 }
 
 cell_field_c::~cell_field_c( void ) {
@@ -23,16 +23,16 @@ unsigned cell_field_c::get_count( void ) {
 cell_t cell_field_c::get( sf::Vector2i pos ) {
 	bool val = false;
 	if ( pos.x < _field_size.x && pos.y < _field_size.y &&
-		 pos.x >= 0 && pos.y >= 0 )
+	        pos.x >= 0 && pos.y >= 0 )
 		val = _field.at( pos.x + pos.y * _field_size.x );
 	else
-		std::cout << __PRETTY_FUNCTION__ << " -> error";
+		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
 	return val;
 }
 
 bool cell_field_c::set( sf::Vector2i pos, cell_t val ) {
 	if ( pos.x < _field_size.x && pos.y < _field_size.y &&
-		 pos.x >= 0 && pos.y >= 0 ) {
+	        pos.x >= 0 && pos.y >= 0 ) {
 		_field.at( pos.x + pos.y * _field_size.x ) = val;
 		return true;
 	} else
@@ -45,7 +45,7 @@ bool cell_field_c::set( uint8_t id, cell_t val ) {
 		_field.at( id ) = val;
 		return true;
 	} else
-		std::cout << __PRETTY_FUNCTION__ << " -> error";
+		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
 	return false;
 }
 
@@ -54,7 +54,7 @@ bool cell_field_c::convert_to_16bit( uint16_t *val ) {
 	// Поле должно быть размером 4 x 4
 	if ( _field_size.x != 4 ||
 	        _field_size.y != 4 ) {
-		std::cout << __PRETTY_FUNCTION__ << " -> error";
+		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
 		return false;
 	}
 

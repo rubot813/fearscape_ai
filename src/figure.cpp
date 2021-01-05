@@ -62,7 +62,7 @@ char figure_c::get_type_char( void ) {
 			break;
 		}
 		default :
-			std::cout << __PRETTY_FUNCTION__ << " -> switch error";
+			std::cout << __PRETTY_FUNCTION__ << " -> switch error\n";
 
 	}	// switch
 	return c;
@@ -79,13 +79,13 @@ figure_c::rotation_e figure_c::get_rotation( void ) {
 
 bool figure_c::set_from_cell_field( cell_field_c *cell_field, cell_field_c::settings_s *settings ) {
 	if ( !cell_field ) {
-		std::cout << __PRETTY_FUNCTION__ << " -> null error";
+		std::cout << __PRETTY_FUNCTION__ << " -> null error\n";
 		return 0;
 	}
 
 	sf::Vector2i cf_size = cell_field->get_size( );
 	if ( cf_size.x != 4 || cf_size.y != 4 ) {
-		std::cout << __PRETTY_FUNCTION__ << " -> wrong size error";
+		std::cout << __PRETTY_FUNCTION__ << " -> wrong size error\n";
 		return 0;
 	}
 
@@ -117,9 +117,6 @@ cell_field_c figure_c::get_cellfield( void ) {
 
 uint16_t figure_c::get_bitfield( void ) {
 	uint16_t ret = 0;
-	std::cout << "get bf type = " << _type;
-	std::cout << "get bf rotat = " << _rotation;
-
 	if (	_type >= 0 &&
 	        _type <= figure_count ) {
 		ret = _cf_bitfield_rotation[ _type ][ _rotation ];
@@ -128,21 +125,23 @@ uint16_t figure_c::get_bitfield( void ) {
 	return ret;
 }
 
-std::vector< bool > figure_c::get_horizontal_projection( void ) {
+figure_c::projection_s figure_c::get_horizontal_projection( void ) {
 	cell_field_c cf = get_cellfield( );
-	std::vector< bool > res_vec;
-	bool val;
-	if ( cf.get_count( ) ) {
+	projection_s proj;
+	proj.valid = 0;
+	bool buffer_value;
+	if ( cf.get_count( ) == ( global_figure_size_x * global_figure_size_y ) ) {
+		proj.valid = 1;
 		for ( uint8_t x = 0; x < global_figure_size_x; x++ ) {
-			val = 0;
+			buffer_value = 0;
 			for ( uint8_t y = global_figure_size_y - 1; y > 0; y-- )
 				if ( cf.get( sf::Vector2i( x, y ) ) ) {
-					val = 1;
+					buffer_value = 1;
 					break;
 				}
-			res_vec.push_back( val );
+			proj.data.push_back( buffer_value );
 		}	// for
 	}	// if
-	return res_vec;
+	return  proj;
 }
 

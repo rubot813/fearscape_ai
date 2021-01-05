@@ -29,6 +29,12 @@ class figure_c {
 			rt_270				// 3
 		};
 
+		// Структура проекции фигуры
+		struct projection_s {
+			std::vector< bool > data;	// Данные
+			bool valid;					// Флаг верности данных
+		};
+
 		// Получение типа фигуры
 		type_e get_type( void );
 
@@ -54,8 +60,7 @@ class figure_c {
 
 		// Получение горизонтальной проекции для фигуры ( с учетом вращения )
 		// Проходит снизу вверх по каждому столбцу, и ставит 1 если присутствует занятая ячейка
-		// Для типа unknown вернет вектор с размером 0, иначе 4
-		std::vector< bool > get_horizontal_projection( void );
+		projection_s get_horizontal_projection( void );
 
 	private:
 		// Тип фигуры

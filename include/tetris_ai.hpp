@@ -27,8 +27,14 @@ class tetris_ai_c {
 			uint8_t rotation;
 		};
 
+		// Структура высоты поля
+		struct height_s {
+			std::vector< uint8_t > data;	// Данные
+			bool valid;						// Флаг верности данных
+		};
+
 		// Метод возвращает текущее значение высот поля
-		std::vector< uint8_t >* get_current_height( void );
+		height_s* get_current_height( void );
 
 		// Метод возвращает количество отверстий в поле
 		uint8_t	get_current_holes_count( void );
@@ -42,7 +48,7 @@ class tetris_ai_c {
 	private:
 
 		// Метод рассчитывает значения высоты для заданного поля
-		std::vector< uint8_t > _calculate_height( cell_field_c *cell_field );
+		height_s _calculate_height( cell_field_c *cell_field );
 
 		// Метод считает количество отверстий в заданном поле
 		uint8_t _calculate_holes( cell_field_c *cell_field );
@@ -50,7 +56,7 @@ class tetris_ai_c {
 		// Высота последнего посчитанного поля ( 0 - нет блока, 1 - n количество блоков по вертикали )
 		// Размер зависит от ширины поля cell_field_c
 		// Обновляется после вызовов методов ai_calc_
-		std::vector< uint8_t > _height;
+		height_s _height;
 
 		// Количество отверстий последнего посчитанного поля
 		// Отверстие - пустая клетка над которой есть одна или более занятых

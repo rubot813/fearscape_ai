@@ -127,17 +127,15 @@ void application::_logic( void ) {
 	                               sf::Vector2i( screen_block_size, screen_block_size ) );
 	// Конвертирование поля цветов в поле ячеек с игнорированием двух линий сверху поля
 	if ( !_pf->convert_to_cellfield( _cf, _online_tetris_settings, 2 ) )
-		std::cout << "_logic -> convert field error";
+		std::cout << __PRETTY_FUNCTION__ << "-> convert field error\n";
 
 	// Взятие поля цветов фигуры с экрана
 	_fill_pixel_field_from_screen( _figure_pf,	sf::Vector2i( screen_start_figure_x, screen_start_figure_y ),
 	                               sf::Vector2i( screen_block_size, screen_block_size ) );
 	// Конвертирование поля цветов в поле ячеек
 	if ( !_figure_pf->convert_to_cellfield( _figure_cf, _online_tetris_settings ) )
-		std::cout << "Convert figure error";
-	if ( !_figure->set_from_cell_field( _figure_cf, _online_tetris_settings ) )
-		std::cout << "Set from cell figure error";
-	else {
+		std::cout << __PRETTY_FUNCTION__ << "-> convert figure error\n";
+	if ( _figure->set_from_cell_field( _figure_cf, _online_tetris_settings ) ) {
 		// Если фигура успешно определена
 
 		// Определение перемещения и вращения фигуры по одному из алгоритмов AI
@@ -198,8 +196,8 @@ void application::_render( void ) {
 	buf_str.clear( );
 	_sf_text->setPosition( sf::Vector2f( 0.0f, 300.0f ) );
 	if ( _field_height ) {
-		for ( unsigned i = 0; i < _field_height->size( ); i++ )
-			buf_str += std::to_string( _field_height->at( i ) ) + ",";
+		for ( unsigned i = 0; i < _field_height->data.size( ); i++ )
+			buf_str += std::to_string( _field_height->data.at( i ) ) + ",";
 		buf_str.erase( buf_str.size( ) - 1 );
 		_sf_text->setString( buf_str );
 		_sf_render_window->draw( *_sf_text );
