@@ -107,9 +107,8 @@ cell_field_c figure_c::get_cell_field_rotated( uint8_t rotation ) {
 
 uint16_t figure_c::get_bitfield_rotated( uint8_t rotation ) {
 	uint16_t ret = 0;
-	if (	_type > 0 &&
-	        _type <= figure_count &&
-	        rotation > 0 &&
+	if (	_type >= 0 &&
+	        _type < figure_count &&	// without unknown type
 	        rotation < 4 ) {
 		ret = _cf_bitfield_rotation[ _type ][ rotation ];
 	} else

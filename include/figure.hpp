@@ -36,6 +36,7 @@ class figure_c {
 		cell_field_c get_cell_field_rotated( uint8_t rotation );
 
 		// Метод возвращает битовое поле для фигуры с вращением rotation ( 0..4 )
+		// Если тип фигуры unknown, вернет 0
 		uint16_t get_bitfield_rotated( uint8_t rotation );
 
 	private:
