@@ -17,26 +17,38 @@ uint8_t	tetris_ai_c::get_current_holes_count( void ) {
 }
 
 tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_field, figure_c *figure ) {
-	// Расчет высот столбцов поля
+	// Р Р°СЃС‡РµС‚ РІС‹СЃРѕС‚ СЃС‚РѕР»Р±С†РѕРІ РїРѕР»СЏ
 	_height = _calculate_height( cell_field );
 
-	// Расчет количества отверстий
+	// Р Р°СЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° РѕС‚РІРµСЂСЃС‚РёР№
 	_holes = _calculate_holes( cell_field );
 
-	move_variant_s mv;
-	return mv;
+	// РС‚РѕРіРѕРІС‹Р№ РІР°СЂРёР°РЅС‚ С…РѕРґР°
+	move_variant_s move_variant;
+
+	// *Р’СЃРµ С„РёРіСѓСЂС‹ РёР·РЅР°С‡Р°Р»СЊРЅРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅС‹ СЃ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ С€РёСЂРёРЅРѕР№, РїРѕСЌС‚РѕРјСѓ РёС… РјРѕР¶РЅРѕ РєСЂСѓС‚РёС‚СЊ РЅР° РєСЂР°СЏС… РїРѕР»СЏ
+	// РџРµСЂРµРґРІРёРіР°РµРј С„РёРіСѓСЂСѓ РґРѕ РїСЂРµРґРµР»Р° РЅР°Р»РµРІРѕ ( РїРѕРєР° РјРѕР¶РµРј )
+
+	// Р¦РёРєР»
+
+	// РѕРїСѓСЃРєР°РµРј С„РёРіСѓСЂСѓ
+	// РєСЂСѓС‚РёРј РїРѕРєР° РјРѕР¶РµРј, РѕРїСЏС‚СЊ РѕРїСѓСЃРєР°РµРј
+	// СЃРґРІРёРіР°РµРј С„РёРіСѓСЂСѓ РЅР°РїСЂР°РІРѕ, РїРѕРєР° РјРѕР¶РµРј
+	// РІ РЅР°С‡Р°Р»Рѕ С†РёРєР»Р°
+
+	return move_variant;
 }
 
 std::vector< uint8_t > tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
-	// Создание поля и задание размера исходя из ширины поля
+	// РЎРѕР·РґР°РЅРёРµ РїРѕР»СЏ Рё Р·Р°РґР°РЅРёРµ СЂР°Р·РјРµСЂР° РёСЃС…РѕРґСЏ РёР· С€РёСЂРёРЅС‹ РїРѕР»СЏ
 	std::vector< uint8_t > height;
 	sf::Vector2i field_size = cell_field->get_size( );
 	height.resize( field_size.x, 0 );
 
-	// Проход по полю
-	// Слева направо 0 .. n
+	// РџСЂРѕС…РѕРґ РїРѕ РїРѕР»СЋ
+	// РЎР»РµРІР° РЅР°РїСЂР°РІРѕ 0 .. n
 	for ( uint8_t x = 0; x < field_size.x; x++ ) {
-		// Сверху вниз 0 .. n
+		// РЎРІРµСЂС…Сѓ РІРЅРёР· 0 .. n
 		for ( uint8_t y = 0; y < field_size.y; y++ ) {
 			if ( cell_field->get( sf::Vector2i( x, y ) ) ) {
 				height.at( x ) = field_size.y - y;
@@ -48,22 +60,20 @@ std::vector< uint8_t > tetris_ai_c::_calculate_height( cell_field_c *cell_field 
 }
 
 uint8_t tetris_ai_c::_calculate_holes( cell_field_c *cell_field ) {
-	uint8_t holes = 0;	// Счетчик отверстий
-	bool get_used;	// Флаг - встретили ли заполненную ячейку
+	uint8_t holes = 0;	// РЎС‡РµС‚С‡РёРє РѕС‚РІРµСЂСЃС‚РёР№
+	bool get_used;	// Р¤Р»Р°Рі - РІСЃС‚СЂРµС‚РёР»Рё Р»Рё Р·Р°РїРѕР»РЅРµРЅРЅСѓСЋ СЏС‡РµР№РєСѓ
 
 	sf::Vector2i field_size = cell_field->get_size( );
 
-	// Проход по полю
-	// Слева направо 0 .. n
+	// РџСЂРѕС…РѕРґ РїРѕ РїРѕР»СЋ
+	// РЎР»РµРІР° РЅР°РїСЂР°РІРѕ 0 .. n
 	for ( uint8_t x = 0; x < field_size.x; x++ ) {
 		get_used = 0;
-		// Сверху вниз 0 .. n
+		// РЎРІРµСЂС…Сѓ РІРЅРёР· 0 .. n
 		for ( uint8_t y = 0; y < field_size.y; y++ ) {
 			if ( cell_field->get( sf::Vector2i( x, y ) ) )
-				// Встретили заполненную ячейку
 				get_used = 1;
 			else {
-				// Встретили пустую ячейку
 				if ( get_used )
 					holes++;
 			}

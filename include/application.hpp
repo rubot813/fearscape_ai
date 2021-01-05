@@ -29,11 +29,10 @@ class application {
 		// Методы обработки логики и рендера
 		void _logic( void );
 		void _render( void );
-
 		void _render_text( sf::Vector2f position, std::string text );
 
 		// Функция заполнения поля пикселей с экрана
-		// Принимает указатель на поле, координаты начала пол¤ и смещение по осям x, y
+		// Принимает указатель на поле, координаты начала поля и смещение по осям x, y
 		void _fill_pixel_field_from_screen( pixel_field_c *pixel_field, sf::Vector2i start_pos, sf::Vector2i offset );
 
 		// Переменные SFML
@@ -58,7 +57,7 @@ class application {
 		// Вариант перемещения фигуры
 		tetris_ai_c::move_variant_s _move_variant;
 
-		// Переменные поля, с которым работаем
+		// Переменные поля
 		// обновляются каждую итерацию
 		pixel_field_c		*_pf;		// Цвета
 		cell_field_c		*_cf;		// Значения ячеек

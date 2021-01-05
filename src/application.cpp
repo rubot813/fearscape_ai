@@ -113,7 +113,9 @@ bool application::_init( void ) {
 	_figure_cf = new cell_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
 
 	// Инициализация ИИ
-	_tetris_ai = new tetris_ai_c;
+	_tetris_ai		= new tetris_ai_c;
+	_field_height	= nullptr;
+	_field_holes	= 0;
 
 	return ok_flag;
 }
@@ -164,16 +166,15 @@ void application::_render( void ) {
 
 	// Render cell field
 	_render_text( sf::Vector2f( 118.0f, 0.0f ), "cell field:" );
-	sf::Color cf_color;
+	uint8_t color_id;
 	for ( unsigned x = 0; x < global_field_size_x; x++ )
 		for ( unsigned y = 0; y < global_field_size_y; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 110.0f, y * 10.0f + 15.0f ) );
 			if ( _cf->get( sf::Vector2i( x, y ) ) )
-				cf_color = sf::Color::White;
+				color_id = 245;
 			else
-				cf_color = sf::Color( 55, 55, 55 );
-
-			_sf_rect_shape->setFillColor( cf_color );
+				color_id = 55;
+			_sf_rect_shape->setFillColor( sf::Color( color_id, color_id, color_id ) );
 			_sf_render_window->draw( *_sf_rect_shape );
 		}
 
@@ -198,7 +199,7 @@ void application::_render( void ) {
 	_sf_text->setPosition( sf::Vector2f( 0.0f, 300.0f ) );
 	if ( _field_height ) {
 		for ( unsigned i = 0; i < _field_height->size( ); i++ )
-		buf_str += std::to_string( _field_height->at( i ) ) + ",";
+			buf_str += std::to_string( _field_height->at( i ) ) + ",";
 		buf_str.erase( buf_str.size( ) - 1 );
 		_sf_text->setString( buf_str );
 		_sf_render_window->draw( *_sf_text );

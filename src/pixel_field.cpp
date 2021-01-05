@@ -26,6 +26,8 @@ sf::Color pixel_field_c::get( sf::Vector2i pos ) {
 	if ( pos.x < _field_size.x ||
 	        pos.y < _field_size.y )
 		col = _field.at( pos.x + pos.y * _field_size.x );
+	else
+		std::cout << __PRETTY_FUNCTION__ << " -> error";
 	return col;
 }
 
@@ -34,13 +36,14 @@ bool pixel_field_c::set( sf::Vector2i pos, sf::Color col ) {
 	        pos.y < _field_size.y ) {
 		_field.at( pos.x + pos.y * _field_size.x ) = col;
 		return true;
-	}
+	} else
+		std::cout << __PRETTY_FUNCTION__ << " -> error";
 	return false;
 }
 
 bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c::settings_s *settings, unsigned up_lines_ignored ) {
 	if ( !cell_field ) {
-		std::cout << "pixel_field_c::convert_to_cellfield -> received nullptr!";
+		std::cout << __PRETTY_FUNCTION__ << " -> nullptr error";
 		return 0;
 	}
 	// Размер cell_field
@@ -49,7 +52,7 @@ bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c
 	// Размеры CF и PF должны совпадать
 	if ( cf_size.x != _field_size.x ||
 	        cf_size.y != _field_size.y ) {
-		std::cout << "pixel_field_c::convert_to_cellfield -> cf size != pf size!";
+		std::cout << __PRETTY_FUNCTION__ << " -> size error";
 		return 0;
 	}
 
