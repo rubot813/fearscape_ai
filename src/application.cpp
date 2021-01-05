@@ -41,6 +41,7 @@ application::~application( void ) {
 	delete _figure_cf;
 	delete _figure_pf;
 	delete _tetris_ai;
+	delete _keypress_emulator;
 }
 
 bool application::_init( void ) {
@@ -60,18 +61,23 @@ bool application::_init( void ) {
 	} else
 		ok_flag = 0;
 
-	_sf_render_window = new sf::RenderWindow( sf::VideoMode( window_size_x, window_size_y ), "Fearscape AI" );
-	_sf_render_window->setFramerateLimit( 60 );
-
 	// proc
 	std::cout << "Searching for application..." << "\n";
 
+	// Поиск окна по имени
 	while( !_window_hwnd )
 		_window_hwnd = FindWindow( 0, working_app_name.c_str( ) );	// from global
 	std::cout << "Application found!\n";
 
 	// Разворачивание окна на передний план
 	SetForegroundWindow( _window_hwnd );
+
+	// Создание и запуск класса эмуляции нажатия на кнопки
+	_keypress_emulator = new keypress_emulator_c( std::chrono::milliseconds( key_press_timeout_msec ), _window_hwnd );
+
+	// Создание своего окна
+	_sf_render_window = new sf::RenderWindow( sf::VideoMode( window_size_x, window_size_y ), "Fearscape AI" );
+	_sf_render_window->setFramerateLimit( 60 );
 
 	// Цвета блоков
 	_online_tetris_settings = new cell_field_c::settings_s;
@@ -195,7 +201,7 @@ void application::_render( void ) {
 	if ( _field_height ) {
 		if ( _field_height->data.size( ) ) {
 			for ( unsigned i = 0; i < _field_height->data.size( ); i++ )
-			buf_str += std::to_string( _field_height->data.at( i ) ) + ",";
+				buf_str += std::to_string( _field_height->data.at( i ) ) + ",";
 			if ( buf_str.size( ) )
 				buf_str.erase( buf_str.size( ) - 1 );
 			_sf_text->setString( buf_str );

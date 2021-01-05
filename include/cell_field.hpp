@@ -27,7 +27,7 @@ class cell_field_c {
 		sf::Vector2i get_size( void );
 
 		// Метод возвращает количество элементов в поле
-		std::size_t get_count( void );
+	std::size_t get_count( void );
 
 		// Метод получения значения ячейки
 		cell_t get( sf::Vector2i pos );

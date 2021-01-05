@@ -16,11 +16,13 @@
 	в очередь кнопок, и сэмулировать их через задержку
 	Работает в отдельном потоке
 */
-class keypress_emulator {
+
+class keypress_emulator_c {
 	public:
-		// Конструктор с указанием задержки между нажатиями кнопок и хэндла окна, которому отправлять события
-		keypress_emulator( std::chrono::milliseconds key_press_delay, HWND window_handler );
-		~keypress_emulator( void );
+		// Конструктор с указанием задержки между нажатиями кнопок и между нажатиями кнопок,
+		// и хэндла окна, которому отправлять события
+		keypress_emulator_c( std::chrono::milliseconds key_press_delay, HWND window_handler );
+		~keypress_emulator_c( void );
 
 		// Метод добавления задачи в очередь кнопок
 		void add_keypress_to_queue( tetris_ai_c::move_variant_s move_variant );

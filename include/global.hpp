@@ -30,6 +30,10 @@ const unsigned	window_size_y			= 500;
 // Общее количество фигур
 const uint8_t	figure_count			= 7;
 
+// Время удержания кнопки при эмуляции нажатия,
+// а также время между нажатиями кнопок
+const unsigned	key_press_timeout_msec	= 50;
+
 // Название окна, с которым взаимодействует AI
 const std::string working_app_name = "Тетрис классический - играть онлайн, без регистрации и без рекламы, реальная таблица результатов - Google Chrome";
 

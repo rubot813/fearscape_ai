@@ -5,6 +5,7 @@
 #include <windows.h>	// HANDLE, HWND
 #include <winuser.h>	// Window focus
 
+#include "keypress_emulator.hpp"
 #include "pixel_field.hpp"
 #include "tetris_ai.hpp"
 #include "figure.hpp"
@@ -67,6 +68,9 @@ class application {
 		pixel_field_c		*_figure_pf;	// Цвета
 		cell_field_c		*_figure_cf;	// Значения ячеек
 		figure_c			*_figure;		// Тип фигуры
+
+		// Указатель на класс эмуляции нажатия кнопок
+		keypress_emulator_c	*_keypress_emulator;
 
 		// Настроки цветов для online-tetris.ru
 		cell_field_c::settings_s 		*_online_tetris_settings;
