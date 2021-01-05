@@ -35,12 +35,14 @@
 		<Unit filename="include/cell_field.hpp" />
 		<Unit filename="include/figure.hpp" />
 		<Unit filename="include/global.hpp" />
+		<Unit filename="include/keypress_emulator.hpp" />
 		<Unit filename="include/pixel_field.hpp" />
 		<Unit filename="include/tetris_ai.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/application.cpp" />
 		<Unit filename="src/cell_field.cpp" />
 		<Unit filename="src/figure.cpp" />
+		<Unit filename="src/keypress_emulator.cpp" />
 		<Unit filename="src/pixel_field.cpp" />
 		<Unit filename="src/tetris_ai.cpp" />
 		<Extensions>

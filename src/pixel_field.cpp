@@ -17,7 +17,7 @@ sf::Vector2i pixel_field_c::get_size( void ) {
 	return _field_size;
 }
 
-unsigned pixel_field_c::get_count( void ) {
+std::size_t pixel_field_c::get_count( void ) {
 	return _field_size.x * _field_size.y;
 }
 

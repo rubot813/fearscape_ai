@@ -27,9 +27,6 @@ application::application( void ) {
 		_render( );
 
 	}	// while win open
-
-	std::cout << "Application succesfully closed\n";
-	system( "pause" );
 }
 
 application::~application( void ) {
@@ -196,15 +193,17 @@ void application::_render( void ) {
 	buf_str.clear( );
 	_sf_text->setPosition( sf::Vector2f( 0.0f, 300.0f ) );
 	if ( _field_height ) {
-		for ( unsigned i = 0; i < _field_height->data.size( ); i++ )
+		if ( _field_height->data.size( ) ) {
+			for ( unsigned i = 0; i < _field_height->data.size( ); i++ )
 			buf_str += std::to_string( _field_height->data.at( i ) ) + ",";
-		buf_str.erase( buf_str.size( ) - 1 );
-		_sf_text->setString( buf_str );
-		_sf_render_window->draw( *_sf_text );
-	} else {
+			if ( buf_str.size( ) )
+				buf_str.erase( buf_str.size( ) - 1 );
+			_sf_text->setString( buf_str );
+		} else
+			_sf_text->setString( "height is empty" );
+	} else
 		_sf_text->setString( "no height received" );
-		_sf_render_window->draw( *_sf_text );
-	}
+	_sf_render_window->draw( *_sf_text );
 
 	// Render field size
 	buf_str.clear( );

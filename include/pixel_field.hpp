@@ -14,7 +14,7 @@ class pixel_field_c {
 		sf::Vector2i get_size( void );
 
 		// Метод возвращает количество элементов в поле
-		unsigned get_count( void );
+		std::size_t get_count( void );
 
 		// Метод получения цвета поля
 		sf::Color get( sf::Vector2i pos );

@@ -16,7 +16,7 @@ sf::Vector2i cell_field_c::get_size( void ) {
 	return _field_size;
 }
 
-unsigned cell_field_c::get_count( void ) {
+std::size_t cell_field_c::get_count( void ) {
 	return _field_size.x * _field_size.y;
 }
 
