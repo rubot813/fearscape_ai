@@ -87,6 +87,16 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 
 	auto start_time = std::chrono::steady_clock::now( );
 
+	// Структура, содержая вариант хода и вес соответствующего варианта хода
+	// Будет совершен ход с наибольшим весом
+	struct weight_var_s {
+		float weight;
+		tetris_ai_c::move_variant_s move_var;
+	};
+
+	// Контейнер с вариантами ходов и их весами
+	std::vector< weight_var_s > weight_var_cont;
+
 	// Расчет высот столбцов поля
 	_height = _calculate_height( cell_field );
 
@@ -95,9 +105,6 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 
 	// Копия фигуры
 	figure_c fg = *figure;
-
-	// Итоговый вариант хода
-	move_variant_s move_variant;
 
 	// Цикл по вращениям фигуры
 	for ( uint8_t rot = 0; rot < 4; rot++ ) {
@@ -109,11 +116,11 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 		figure_c::projection_s f_projection = fg.get_horizontal_projection( );
 
 		// Получение количества пустых горизонтальных линий с краев фигуры
-		uint8_t left_offset = 0;
+		int8_t left_offset = 0;
 		if ( !f_projection.get_left_offset( &left_offset ) )
 			std::cout << __FUNCTION__ << " -> get left offset error\n";
 
-		uint8_t right_offset = 0;
+		int8_t right_offset = 0;
 		if ( !f_projection.get_right_offset( &right_offset ) )
 			std::cout << __FUNCTION__ << " -> get right offset error\n";
 
@@ -123,26 +130,59 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 			// Копия поля, чтобы не испортить указатель
 			cell_field_c cf = *cell_field;
 
+			// Метод кладет фигуру на поле
 			if ( fg.place_to_cellfield( &cf, hor_pos ) ) {
+				// Расчет параметров для поля с фигурой:
+
+				// Высоты столбцов поля
+				height_s he = _calculate_height( &cf );
+
+				// Сумма высот столбцов поля
+				uint16_t hs = _calculate_height_sum( &he );
+
+				// Количество отверстий
+				uint8_t ho = _calculate_holes( &cf );
+
+				// Количество линий
+				uint8_t li = _calculate_lines( &cf );
+
+				// Вариант хода с весом
+				weight_var_s weight_var;
+
+				// Формула расчета веса варианта положения фигуры
+				weight_var.weight = -ho;	//li * 2.0f - hs * 1.0f - ho * 0.8f;
+
+				// Заполнение хода
+				weight_var.move_var.position = hor_pos - 3;
+				weight_var.move_var.rotation = static_cast< figure_c::rotation_e >( rot );
+
+				// Добавление хода с его весом в контейнер
+				weight_var_cont.push_back( weight_var );
 
 			} else
-				std::cout << "Error\n";
-		}
-	}
+				std::cout << __FUNCTION__ << " -> error, cannot place figure\n";
+		}	// for horizontal position
+	}	// for rotation
 
-	// = = = = =
-	/*
-	if ( figure->is_can_place( global_field_size_x, 5 ) )
-		std::cout << "CAN PLACE\n";
-	if ( figure->is_can_place( cell_field, sf::Vector2i( 0, 16 ) ) )
-		std::cout << "CAN PLACE\n";
-	*/
-	// = = = = =
+	std::cout << "Variants = " << weight_var_cont.size( ) << "\n";
+
+	// Сортировка контейнера по наибольшему весу
+	std::sort( weight_var_cont.begin( ), weight_var_cont.end( ),
+			[ ]( const weight_var_s &wv_0, const weight_var_s &wv_1 ) {
+				return ( wv_0.weight > wv_1.weight );
+			} );
 
 	_ai_alg_name = __FUNCTION__;
 	auto end_time = std::chrono::steady_clock::now( );
 	_calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
-	return move_variant;
+
+	// Пока костыль
+	move_variant_s var;
+	if ( !weight_var_cont.size( ) ) {
+		return var;
+	} else
+		// Возврат наилучшего результата хода
+		return weight_var_cont.front( ).move_var;
 }
 
 tetris_ai_c::height_s tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
@@ -204,5 +244,15 @@ uint8_t tetris_ai_c::_calculate_lines( cell_field_c *cell_field ) {
 		}	// for x
 	}	// for y
 	return lines;
+}
+
+std::size_t	tetris_ai_c::_calculate_height_sum( height_s *height ) {
+	std::size_t value = 0;
+	auto iter = height->data.begin( );
+	while( iter != height->data.end( ) ) {
+		value += *iter;
+		iter++;
+	}
+	return value;
 }
 

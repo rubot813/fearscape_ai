@@ -45,12 +45,12 @@ class figure_c {
 			// Функция возвращает смещение фигуры с левого края
 			// Смещение - количество нулей слева
 			// Вернет true если успешно
-			bool get_left_offset( uint8_t *offset );
+			bool get_left_offset( int8_t *offset );
 
 			// Функция возвращает смещение фигуры с правого края
 			// Смещение - количество нулей справа
 			// Вернет true если успешно
-			bool get_right_offset( uint8_t *offset );
+			bool get_right_offset( int8_t *offset );
 		};
 
 		// Получение типа фигуры

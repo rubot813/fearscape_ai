@@ -290,9 +290,9 @@ char figure_c::get_type_char( void ) {
 
 // ==== projection_s ====
 
-bool figure_c::projection_s::get_left_offset( uint8_t *offset ) {
+bool figure_c::projection_s::get_left_offset( int8_t *offset ) {
 	bool ok_flag = 0;
-	uint8_t value = 0;
+	int8_t value = 0;
 	if ( valid && data.size( ) && offset ) {
 		ok_flag = 1;
 		for ( uint8_t i = 0; i < data.size( ); i++ )
@@ -305,9 +305,9 @@ bool figure_c::projection_s::get_left_offset( uint8_t *offset ) {
 	return ok_flag;
 }
 
-bool figure_c::projection_s::get_right_offset( uint8_t *offset ) {
+bool figure_c::projection_s::get_right_offset( int8_t *offset ) {
 	bool ok_flag = 0;
-	uint8_t value = 0;
+	int8_t value = 0;
 	if ( valid && data.size( ) && offset ) {
 		ok_flag = 1;
 		for ( uint8_t i = data.size( ) - 1; i >= 0; i-- )

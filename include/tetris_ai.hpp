@@ -2,8 +2,10 @@
 #define TETRIS_AI_HPP
 
 #include <ctime>		// ai_calc_random
-#include "stdlib.h"
 #include <chrono>
+#include <algorithm>
+#include "stdlib.h"
+
 #include "pixel_field.hpp"
 #include "figure.hpp"
 
@@ -73,6 +75,9 @@ class tetris_ai_c {
 
 		// Метод считает количество заполненных горизонтальных линий в заданном поле
 		uint8_t _calculate_lines( cell_field_c *cell_field );
+
+		// Метод возвращает сумму высот заданного поля
+		std::size_t	_calculate_height_sum( height_s *height );
 
 		// Высота последнего посчитанного поля ( 0 - нет блока, 1 - n количество блоков по вертикали )
 		// Размер зависит от ширины поля cell_field_c
