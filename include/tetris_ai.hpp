@@ -3,7 +3,7 @@
 
 #include <ctime>		// ai_calc_random
 #include "stdlib.h"
-
+#include <chrono>
 #include "pixel_field.hpp"
 #include "figure.hpp"
 
@@ -48,17 +48,20 @@ class tetris_ai_c {
 		// Метод возвращает имя алгоритма AI, который вызывали последний раз
 		std::string* get_ai_alg_name( void );
 
+		// Метод возвращает длительность работы последнего алгоритма AI в миллисекундах
+	std::chrono::milliseconds * get_ai_calc_time( void );
+
 		// Алгоритм просто кладет фигуру вниз без стратегии
 		// Для тестов
-		move_variant_s ai_calc_simple_placer( cell_field_c *cell_field, figure_c *figure );
+		move_variant_s ai_alg_simple_placer( cell_field_c *cell_field, figure_c *figure );
 
 		// Алгоритм просто кладет фигуру в случайном месте со случайным вращением
 		// Для тестов
-		move_variant_s ai_calc_random( cell_field_c *cell_field, figure_c *figure );
+		move_variant_s ai_alg_random( cell_field_c *cell_field, figure_c *figure );
 
 		// Алгоритм просчитывает все варианты постановки фигуры, и ищет наименьший по высоте без создания отверстий
 		// Если такой ход невозможен, возвращает вариант с наименьшей суммой высот высотой
-		move_variant_s ai_calc_bm_noholes( cell_field_c *cell_field, figure_c *figure );
+		move_variant_s ai_alg_bm_noholes( cell_field_c *cell_field, figure_c *figure );
 
 	private:
 
@@ -79,6 +82,9 @@ class tetris_ai_c {
 
 		// Имя алгоритма AI, который вызывали последний раз
 		std::string _ai_alg_name;
+
+		// Длительность работы последнего алгоритма AI в миллисекундах
+		std::chrono::milliseconds _calc_time;
 };
 
 #endif // TETRIS_AI_HPP

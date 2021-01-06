@@ -62,6 +62,9 @@ class application {
 		// Имя алгоритма, который кладет текущую фигуру
 		std::string				*_ai_alg_name;
 
+		// Длительность работы последнего алгоритма AI
+		std::chrono::milliseconds *_ai_calc_time;
+
 		// Вариант перемещения фигуры
 		tetris_ai_c::move_variant_s _move_variant;
 

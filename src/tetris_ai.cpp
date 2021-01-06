@@ -31,7 +31,13 @@ std::string* tetris_ai_c::get_ai_alg_name( void ) {
 	return &_ai_alg_name;
 }
 
-tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_simple_placer( cell_field_c *cell_field, figure_c *figure ) {
+std::chrono::milliseconds* tetris_ai_c::get_ai_calc_time( void ) {
+	return &_calc_time;
+}
+
+tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_simple_placer( cell_field_c *cell_field, figure_c *figure ) {
+
+	auto start_time = std::chrono::steady_clock::now( );
 
 	// Расчет высот столбцов поля
 	_height = _calculate_height( cell_field );
@@ -48,10 +54,15 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_simple_placer( cell_field_c *ce
 	// = = = = =
 
 	_ai_alg_name = __FUNCTION__;
+	auto end_time = std::chrono::steady_clock::now( );
+	_calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
 	return move_variant;
 }
 
-tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_random( cell_field_c *cell_field, figure_c *figure ) {
+tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_random( cell_field_c *cell_field, figure_c *figure ) {
+
+	auto start_time = std::chrono::steady_clock::now( );
+
 	// Расчет высот столбцов поля
 	_height = _calculate_height( cell_field );
 
@@ -67,10 +78,15 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_random( cell_field_c *cell_fiel
 	// = = = = =
 
 	_ai_alg_name = __FUNCTION__;
+	auto end_time = std::chrono::steady_clock::now( );
+	_calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
 	return move_variant;
 }
 
-tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_field, figure_c *figure ) {
+tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_field, figure_c *figure ) {
+
+	auto start_time = std::chrono::steady_clock::now( );
+
 	// Расчет высот столбцов поля
 	_height = _calculate_height( cell_field );
 
@@ -81,13 +97,17 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_
 	move_variant_s move_variant;
 
 	// = = = = =
-	// if ( figure->is_can_place( global_field_size_x, 5 ) )
-	// 	std::cout << "CAN PLACE\n";
+	/*
+	if ( figure->is_can_place( global_field_size_x, 5 ) )
+		std::cout << "CAN PLACE\n";
 	if ( figure->is_can_place( cell_field, sf::Vector2i( 0, 16 ) ) )
 		std::cout << "CAN PLACE\n";
+	*/
 	// = = = = =
 
 	_ai_alg_name = __FUNCTION__;
+	auto end_time = std::chrono::steady_clock::now( );
+	_calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
 	return move_variant;
 }
 

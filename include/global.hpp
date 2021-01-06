@@ -25,7 +25,7 @@ const unsigned	screen_block_size		= 24;
 
 // Размеры отладочного окна
 const unsigned	window_size_x			= 215;
-const unsigned	window_size_y			= 390;
+const unsigned	window_size_y			= 405;
 
 // Общее количество фигур
 const uint8_t	figure_count			= 7;

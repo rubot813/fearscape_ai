@@ -143,6 +143,7 @@ bool application::_init( void ) {
 	// Другое
 	_figure_counter = 0;
 	_ai_alg_name = nullptr;
+	_ai_calc_time = nullptr;
 
 	return ok_flag;
 }
@@ -172,7 +173,7 @@ void application::_logic( void ) {
 		if ( _figure->set_from_cell_field( _previous_figure_cf, _online_tetris_settings ) ) {
 
 			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
-			_move_variant	= _tetris_ai->ai_calc_bm_noholes( _cf, _figure );
+			_move_variant	= _tetris_ai->ai_alg_bm_noholes( _cf, _figure );
 
 			// Эмуляция нажатия кнопок
 			_keypress_emulator->add_keypress_to_queue( &_move_variant );
@@ -181,6 +182,7 @@ void application::_logic( void ) {
 			_field_height	= _tetris_ai->get_height( );
 			_field_holes	= _tetris_ai->get_holes_count( );
 			_ai_alg_name	= _tetris_ai->get_ai_alg_name( );
+			_ai_calc_time	= _tetris_ai->get_ai_calc_time( );
 			_figure_counter++;
 		}
 
@@ -297,12 +299,21 @@ void application::_render( void ) {
 
 	// Render AI algorithm name
 	buf_str.clear( );
-	buf_str = "ai alg: ";
+	buf_str = "ai: ";
 	if ( _ai_alg_name )
 		buf_str += *_ai_alg_name;
 	else
 		buf_str += "n/a";
 	_render_text( sf::Vector2f( 10.0f, 360.0f ), buf_str );
+
+	// Render AI calculation time
+	buf_str.clear( );
+	buf_str = "calc time: ";
+	if ( _ai_calc_time )
+		buf_str += std::to_string( ( double )_ai_calc_time->count( ) ) + " ms";
+	else
+		buf_str += "n/a";
+	_render_text( sf::Vector2f( 10.0f, 375.0f ), buf_str );
 
 	// double buff
 	_sf_render_window->display( );

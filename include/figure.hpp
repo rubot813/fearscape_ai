@@ -95,8 +95,13 @@ class figure_c {
 		// Метод принимает поле ячеек и горизонтальную позицию для фигуры
 		// ( где 0 - начальное положение фигуры, на поле y = 3 )
 		// Меняет поле на поле с фигурой, упавшей на него сверху
-		// Вернет true если успешно
-		bool place_on_cellfield( cell_field_c *cell_field, int8_t hor_position );
+		// Возвращает true если фигура успешно установлена
+		bool place_to_cellfield( cell_field_c *cell_field, int8_t hor_position );
+
+		// Метод накладывает фигуру на поле
+		// Принимает поле и позицию, возвращает true если успешно
+		// Если вернет false, значит какая то ячейка занята и поле будет испорчено
+		bool apply_to_cellfield( cell_field_c *cell_field, sf::Vector2i position );
 
 	private:
 		// Тип фигуры
