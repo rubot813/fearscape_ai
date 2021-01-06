@@ -123,14 +123,14 @@ bool application::_init( void ) {
 	_online_tetris_settings->free_cells.push_back( { sf::Color( 235, 234, 239 ) } );
 
 	// Инициализация внутренних классов
-	_pf = new pixel_field_c( sf::Vector2i( global_field_size_x, global_field_size_y ) );
-	_cf = new cell_field_c( sf::Vector2i( global_field_size_x, global_field_size_y ) );
+	_pf = new pixel_field_c( sf::Vector2i( field_size_x_c, field_size_y_c ) );
+	_cf = new cell_field_c( sf::Vector2i( field_size_x_c, field_size_y_c ) );
 
-	_current_figure_pf = new pixel_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
-	_current_figure_cf = new cell_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
+	_current_figure_pf = new pixel_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
+	_current_figure_cf = new cell_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
 
-	_previous_figure_pf = new pixel_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
-	_previous_figure_cf = new cell_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
+	_previous_figure_pf = new pixel_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
+	_previous_figure_cf = new cell_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
 
 	// Оставляю в _previous_figure_pf мусор, чтобы не срабатывало сравнение
 	_previous_figure_pf->set( sf::Vector2i( 0, 0 ), sf::Color::Blue );
@@ -199,8 +199,8 @@ void application::_render( void ) {
 	// Render pixel field
 	_render_text( sf::Vector2f( 0.0f, 0.0f ), "raw pix field:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
-	for ( unsigned x = 0; x < global_field_size_x; x++ )
-		for ( unsigned y = 0; y < global_field_size_y; y++ ) {
+	for ( unsigned x = 0; x < field_size_x_c; x++ )
+		for ( unsigned y = 0; y < field_size_y_c; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 5.0f, y * 10.0f + 15.0f ) );
 			_sf_rect_shape->setFillColor( _pf->get( sf::Vector2i( x, y ) ) );
 			_sf_render_window->draw( *_sf_rect_shape );
@@ -209,8 +209,8 @@ void application::_render( void ) {
 	// Render cell field
 	_render_text( sf::Vector2f( 118.0f, 0.0f ), "cell field:" );
 	uint8_t color_id;
-	for ( unsigned x = 0; x < global_field_size_x; x++ )
-		for ( unsigned y = 0; y < global_field_size_y; y++ ) {
+	for ( unsigned x = 0; x < field_size_x_c; x++ )
+		for ( unsigned y = 0; y < field_size_y_c; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 110.0f, y * 10.0f + 15.0f ) );
 			if ( _cf->get( sf::Vector2i( x, y ) ) )
 				color_id = 245;
@@ -228,8 +228,8 @@ void application::_render( void ) {
 	// Render previous figure
 	_render_text( sf::Vector2f( 9.0f, 225.0f ), "prev figure:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
-	for ( unsigned x = 0; x < global_figure_size_x; x++ )
-		for ( unsigned y = 0; y < global_figure_size_y; y++ ) {
+	for ( unsigned x = 0; x < figure_size_x_c; x++ )
+		for ( unsigned y = 0; y < figure_size_y_c; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 35.0f, y * 10.0f + 245.0f ) );
 			_sf_rect_shape->setFillColor( _previous_figure_pf->get( sf::Vector2i( x, y ) ) );
 			_sf_render_window->draw( *_sf_rect_shape );
@@ -237,11 +237,11 @@ void application::_render( void ) {
 
 	// Render field size
 	buf_str.clear( );
-	buf_str += "x size: " + std::to_string( global_field_size_x );
+	buf_str += "x size: " + std::to_string( field_size_x_c );
 	_render_text( sf::Vector2f( 120.0f, 225.0f ), buf_str );
 
 	buf_str.clear( );
-	buf_str += "y size: " + std::to_string( global_field_size_y );
+	buf_str += "y size: " + std::to_string( field_size_y_c );
 	_render_text( sf::Vector2f( 120.0f, 237.0f ), buf_str );
 
 	// Render count of holes

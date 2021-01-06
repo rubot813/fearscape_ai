@@ -120,7 +120,10 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 		if ( !f_projection.get_right_offset( &right_offset ) )
 			std::cout << __FUNCTION__ << " -> get right offset error\n";
 
-		//
+		// Цикл по всем вариантам постановки фигуры с данным вращением
+		for ( int8_t hor_pos = -left_offset; hor_pos <= ( field_size_x_c - figure_size_x_c + right_offset ); hor_pos++ ) {
+
+		}
 	}
 
 	// = = = = =

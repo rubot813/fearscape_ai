@@ -5,12 +5,12 @@
 #include <SFML/Graphics/Color.hpp>
 
 // Размеры поля
-const unsigned	global_field_size_x		= 10;	// Горизонтальное
-const unsigned	global_field_size_y		= 20;	// Вертикальное
+const unsigned	field_size_x_c		= 10;	// Горизонтальное
+const unsigned	field_size_y_c		= 20;	// Вертикальное
 
 // Размеры превью фигуры ( не менять, описаны в вики )
-const unsigned	global_figure_size_x	= 4;
-const unsigned	global_figure_size_y	= 4;
+const unsigned	figure_size_x_c	= 4;
+const unsigned	figure_size_y_c	= 4;
 
 // Координаты начала поля на экране в пикселях
 const unsigned	screen_start_field_x	= 800;
@@ -42,7 +42,5 @@ const std::string config_file_name = "config.txt";
 
 // Тип ячейки
 typedef	bool	cell_t;
-const bool		USED_CELL = true;
-const bool		FREE_CELL = false;
 
 #endif // GLOBAL_HPP_INCLUDED

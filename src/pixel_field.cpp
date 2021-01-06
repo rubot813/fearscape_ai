@@ -77,14 +77,14 @@ bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c
 
 			// Определяю, чем цвет будет в cell_field
 			bool contatins = 0;	// Флаг, что тип ячейки найден по цвету
-			cell_t cfv = FREE_CELL;	// Все неопределенные ячейки по умолчанию пусты
+			cell_t cfv = 0;	// Все неопределенные ячейки по умолчанию пусты
 
 			// Проверка заполненных ячеек
 			auto iter = settings->used_cells.begin( );
 			while( iter != settings->used_cells.end( ) ) {
 				if ( *iter == pfc ) {
 					contatins = 1;
-					cfv = USED_CELL;
+					cfv = 1;
 					break;
 				}
 				++iter;
@@ -102,10 +102,6 @@ bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c
 					++iter;
 				}	// while free cells
 			}	// ifn contains
-
-			// Не определили тип по всем контейнерам
-			// if ( !contatins )
-			// 	std::cout << "cannot found cell type with color " << ( unsigned )pfc.r << ", " << ( unsigned )pfc.g << ", " << ( unsigned )pfc.b << "\n";
 
 			// Установка типа ячейки
 			cell_field->set( sf::Vector2i( x, y ), cfv );
