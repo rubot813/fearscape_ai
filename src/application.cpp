@@ -172,14 +172,14 @@ void application::_logic( void ) {
 		if ( _figure->set_from_cell_field( _previous_figure_cf, _online_tetris_settings ) ) {
 
 			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
-			_move_variant	= _tetris_ai->ai_calc_random( _cf, _figure );
+			_move_variant	= _tetris_ai->ai_calc_bm_noholes( _cf, _figure );
 
 			// Эмуляция нажатия кнопок
-			_keypress_emulator->add_keypress_to_queue( &_move_variant );
+			// _keypress_emulator->add_keypress_to_queue( &_move_variant );
 
 			// После расчета хода можно взять следующие параметры для отладки
-			_field_height	= _tetris_ai->get_current_height( );
-			_field_holes	= _tetris_ai->get_current_holes_count( );
+			_field_height	= _tetris_ai->get_height( );
+			_field_holes	= _tetris_ai->get_holes_count( );
 			_ai_alg_name	= _tetris_ai->get_ai_alg_name( );
 			_figure_counter++;
 		}

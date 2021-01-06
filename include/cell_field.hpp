@@ -14,6 +14,11 @@ class cell_field_c {
 		cell_field_c( sf::Vector2i field_size );
 		~cell_field_c( void );
 
+		// Перегрузка операторов
+		friend bool operator==( const cell_field_c &cf_0, const cell_field_c &cf_1 );
+		friend bool operator!=( const cell_field_c &cf_0, const cell_field_c &cf_1 );
+		cell_field_c& operator=( const cell_field_c &cf );
+
 		// Структура настроек для поля ячеек
 		struct settings_s {
 			// Набор цветов заполненных ячеек

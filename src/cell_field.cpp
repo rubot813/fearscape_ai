@@ -12,6 +12,20 @@ cell_field_c::~cell_field_c( void ) {
 	_field.clear( );
 }
 
+bool operator==( const cell_field_c &cf_0, const cell_field_c &cf_1 ) {
+	return ( cf_0._field == cf_1._field );
+}
+
+bool operator !=( const cell_field_c &cf_0, const cell_field_c &cf_1 ) {
+	return ( cf_0._field != cf_1._field );
+}
+
+cell_field_c& cell_field_c::operator=( const cell_field_c &cf ) {
+	_field		= cf._field;
+	_field_size	= cf._field_size;
+	return *this;
+}
+
 sf::Vector2i cell_field_c::get_size( void ) {
 	return _field_size;
 }

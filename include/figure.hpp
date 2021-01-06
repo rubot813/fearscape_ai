@@ -33,6 +33,21 @@ class figure_c {
 		struct projection_s {
 			std::vector< bool > data;	// Данные
 			bool valid;					// Флаг верности данных
+
+			projection_s( void ) {
+				data.clear( );
+				valid = 0;
+			}
+
+			// Функция возвращает смещение фигуры с левого края
+			// Смещение - количество нулей слева
+			// Вернет true если успешно
+			bool get_left_offset( uint8_t *offset );
+
+			// Функция возвращает смещение фигуры с правого края
+			// Смещение - количество нулей справа
+			// Вернет true если успешно
+			bool get_right_offset( uint8_t *offset );
 		};
 
 		// Получение типа фигуры
@@ -61,6 +76,18 @@ class figure_c {
 		// Получение горизонтальной проекции для фигуры ( с учетом вращения )
 		// Проходит снизу вверх по каждому столбцу, и ставит 1 если присутствует занятая ячейка
 		projection_s get_horizontal_projection( void );
+		projection_s get_horizontal_projection( cell_field_c *cell_field );
+
+		// Метод возвращает, возможно ли положить фигуру в заданную горизонтальную позицию
+		// в заданном поле ячеек
+		// ( где 0 - начальное положение фигуры, на поле y = 3 )
+		bool is_can_place( cell_field_c *cell_field, int8_t position );
+
+		// Метод принимает поле ячеек и горизонтальную позицию для фигуры
+		// ( где 0 - начальное положение фигуры, на поле y = 3 )
+		// Меняет поле на поле с фигурой, упавшей на него сверху
+		// Вернет true если успешно
+		bool place_on_cellfield( cell_field_c *cell_field, int8_t position );
 
 	private:
 		// Тип фигуры

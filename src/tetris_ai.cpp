@@ -9,11 +9,21 @@ tetris_ai_c::~tetris_ai_c( void ) {
 	// np
 }
 
-tetris_ai_c::height_s* tetris_ai_c::get_current_height( void ) {
+tetris_ai_c::height_s* tetris_ai_c::get_height( void ) {
 	return &_height;
 }
 
-uint8_t	tetris_ai_c::get_current_holes_count( void ) {
+std::size_t	tetris_ai_c::get_height_sum( void ) {
+	std::size_t value = 0;
+	auto iter = _height.data.begin( );
+	while( iter != _height.data.end( ) ) {
+		value += *iter;
+		iter++;
+	}
+	return value;
+}
+
+uint8_t	tetris_ai_c::get_holes_count( void ) {
 	return _holes;
 }
 
@@ -64,16 +74,6 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_
 
 	// Итоговый вариант хода
 	move_variant_s move_variant;
-
-	// *Все фигуры изначально расположены с максимальной шириной, поэтому их можно крутить на краях поля
-	// Передвигаем фигуру до предела налево ( пока можем )
-
-	// Цикл
-
-	// опускаем фигуру
-	// крутим пока можем, опять опускаем
-	// сдвигаем фигуру направо, пока можем
-	// в начало цикла
 
 	_ai_alg_name = __FUNCTION__;
 	return move_variant;

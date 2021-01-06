@@ -62,7 +62,7 @@ char figure_c::get_type_char( void ) {
 			break;
 		}
 		default :
-			std::cout << __PRETTY_FUNCTION__ << " -> switch error\n";
+			std::cout << __FUNCTION__ << " -> switch error\n";
 
 	}	// switch
 	return c;
@@ -79,13 +79,13 @@ figure_c::rotation_e figure_c::get_rotation( void ) {
 
 bool figure_c::set_from_cell_field( cell_field_c *cell_field, cell_field_c::settings_s *settings ) {
 	if ( !cell_field ) {
-		std::cout << __PRETTY_FUNCTION__ << " -> null error\n";
+		std::cout << __FUNCTION__ << " -> null error\n";
 		return 0;
 	}
 
 	sf::Vector2i cf_size = cell_field->get_size( );
 	if ( cf_size.x != 4 || cf_size.y != 4 ) {
-		std::cout << __PRETTY_FUNCTION__ << " -> wrong size error\n";
+		std::cout << __FUNCTION__ << " -> wrong size error\n";
 		return 0;
 	}
 
@@ -111,7 +111,7 @@ cell_field_c figure_c::get_cellfield( void ) {
 		for ( unsigned id = 0; id < ( global_figure_size_x * global_figure_size_y ); id++ )
 			cell_field.set( id, ( ( bitfield ) & ( 1 << id ) ) );
 	} else
-		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
+		std::cout << __FUNCTION__ << " -> error\n";
 	return cell_field;
 }
 
@@ -121,7 +121,7 @@ uint16_t figure_c::get_bitfield( void ) {
 	        _type <= figure_count ) {
 		ret = _cf_bitfield_rotation[ _type ][ _rotation ];
 	} else
-		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
+		std::cout << __FUNCTION__ << " -> error\n";
 	return ret;
 }
 
@@ -145,3 +145,82 @@ figure_c::projection_s figure_c::get_horizontal_projection( void ) {
 	return  proj;
 }
 
+figure_c::projection_s figure_c::get_horizontal_projection( cell_field_c *cell_field ) {
+	projection_s proj;
+	proj.valid = 0;
+	bool buffer_value;
+	if ( cell_field->get_count( ) == ( global_figure_size_x * global_figure_size_y ) ) {
+		proj.valid = 1;
+		for ( uint8_t x = 0; x < global_figure_size_x; x++ ) {
+			buffer_value = 0;
+			for ( uint8_t y = global_figure_size_y - 1; y > 0; y-- )
+				if ( cell_field->get( sf::Vector2i( x, y ) ) ) {
+					buffer_value = 1;
+					break;
+				}
+			proj.data.push_back( buffer_value );
+		}	// for
+	}	// if
+	return  proj;
+}
+
+bool figure_c::is_can_place( cell_field_c *cell_field, int8_t position ) {
+	bool ok_flag = 0;
+
+    // Сохраняю поле ячеек
+    cell_field_c cf_buffer = *cell_field;
+
+    // Получаю битовое поле и проекцию фигуры
+    cell_field_c figure_cf = get_cellfield( );
+    projection_s fig_hor_proj = get_horizontal_projection( &figure_cf );
+    if ( fig_hor_proj.valid ) {
+		ok_flag = 1;
+
+    }
+
+    return ok_flag;
+}
+
+bool figure_c::place_on_cellfield( cell_field_c *cell_field, int8_t position ) {
+    bool ok_flag = 1;	// Флаг, что все успешно
+
+    // Сохраняю поле ячеек
+    cell_field_c cf_buffer = *cell_field;
+
+
+    return ok_flag;
+}
+
+// ==== projection_s ====
+
+bool figure_c::projection_s::get_left_offset( uint8_t *offset ) {
+	bool ok_flag = 0;
+	uint8_t value = 0;
+	if ( valid && data.size( ) && offset ) {
+		ok_flag = 1;
+		for ( uint8_t i = 0; i < data.size( ); i++ )
+			if ( !data.at( i ) )
+				value++;
+			else
+				break;
+		*offset = value;
+	}
+	return ok_flag;
+}
+
+bool figure_c::projection_s::get_right_offset( uint8_t *offset ) {
+	bool ok_flag = 0;
+	uint8_t value = 0;
+	if ( valid && data.size( ) && offset ) {
+		ok_flag = 1;
+		for ( uint8_t i = data.size( ) - 1; i >= 0; i-- )
+			if ( !data.at( i ) )
+				value++;
+			else
+				break;
+		*offset = value;
+	}
+	return ok_flag;
+}
+
+// ==== projection_s ====

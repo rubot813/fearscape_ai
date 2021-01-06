@@ -30,6 +30,9 @@ const unsigned	window_size_y			= 390;
 // Общее количество фигур
 const uint8_t	figure_count			= 7;
 
+// Начальная позиция фигур на поле по горизонтали ( левый верхний угол == 0 )
+const uint8_t	figure_start_position_y	= 3;
+
 // Время удержания кнопки при эмуляции нажатия,
 // а также время между нажатиями кнопок
 const unsigned	key_press_timeout_msec	= 75;

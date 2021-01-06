@@ -21,6 +21,7 @@ void keypress_emulator_c::add_keypress_to_queue( tetris_ai_c::move_variant_s *mo
 		_key_queue.push( VK_UP );
 
 	// Перемещение блока
+	// todo ternar
 	if ( move_variant->position < 0 ) {
 		for ( int8_t i = move_variant->position; i < 0; i++ )
 			_key_queue.push( VK_LEFT );
