@@ -13,6 +13,20 @@ pixel_field_c::~pixel_field_c( void ) {
 	_field.clear( );
 }
 
+bool operator==( const pixel_field_c &pf_0, const pixel_field_c &pf_1 ) {
+	return ( pf_0._field == pf_1._field );
+}
+
+bool operator !=( const pixel_field_c &pf_0, const pixel_field_c &pf_1 ) {
+	return ( pf_0._field != pf_1._field );
+}
+
+pixel_field_c& pixel_field_c::operator=( const pixel_field_c &pf ) {
+	_field		= pf._field;
+	_field_size	= pf._field_size;
+	return *this;
+}
+
 sf::Vector2i pixel_field_c::get_size( void ) {
 	return _field_size;
 }

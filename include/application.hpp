@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <windows.h>	// HANDLE, HWND
 #include <winuser.h>	// Window focus
+#include <fstream>
 
 #include "keypress_emulator.hpp"
 #include "pixel_field.hpp"
@@ -55,6 +56,9 @@ class application {
 		// Количество отверстий в поле
 		uint8_t					_field_holes;
 
+		// Счетчик фигур
+		std::size_t				_figure_counter;
+
 		// Вариант перемещения фигуры
 		tetris_ai_c::move_variant_s _move_variant;
 
@@ -63,10 +67,15 @@ class application {
 		pixel_field_c		*_pf;		// Цвета
 		cell_field_c		*_cf;		// Значения ячеек
 
-		// В данной реализации AI знает только о текущей фигуре
 		// Переменные фигуры
-		pixel_field_c		*_figure_pf;	// Цвета
-		cell_field_c		*_figure_cf;	// Значения ячеек
+		// Текущая фигура
+		pixel_field_c		*_current_figure_pf;	// Цвета
+		cell_field_c		*_current_figure_cf;	// Значения ячеек
+
+		// Предыдущая фигура
+		pixel_field_c		*_previous_figure_pf;	// Цвета
+		cell_field_c		*_previous_figure_cf;	// Значения ячеек
+
 		figure_c			*_figure;		// Тип фигуры
 
 		// Указатель на класс эмуляции нажатия кнопок

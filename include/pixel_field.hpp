@@ -10,6 +10,11 @@ class pixel_field_c {
 		pixel_field_c( sf::Vector2i field_size );
 		~pixel_field_c( void );
 
+		// Перегрузка операторов
+		friend bool operator==( const pixel_field_c &pf_0, const pixel_field_c &pf_1 );
+		friend bool operator!=( const pixel_field_c &pf_0, const pixel_field_c &pf_1 );
+		pixel_field_c& operator=( const pixel_field_c &pf );
+
 		// Метод возвращает размер поля
 		sf::Vector2i get_size( void );
 

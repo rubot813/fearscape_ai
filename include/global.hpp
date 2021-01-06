@@ -25,17 +25,17 @@ const unsigned	screen_block_size		= 24;
 
 // Размеры отладочного окна
 const unsigned	window_size_x			= 215;
-const unsigned	window_size_y			= 500;
+const unsigned	window_size_y			= 380;
 
 // Общее количество фигур
 const uint8_t	figure_count			= 7;
 
 // Время удержания кнопки при эмуляции нажатия,
 // а также время между нажатиями кнопок
-const unsigned	key_press_timeout_msec	= 50;
+const unsigned	key_press_timeout_msec	= 200;
 
-// Название окна, с которым взаимодействует AI
-const std::string working_app_name = "Тетрис классический - играть онлайн, без регистрации и без рекламы, реальная таблица результатов - Google Chrome";
+// Имя конфиг - файла, обязательно в кодировке CP-1251 ( Windows-1251 )
+const std::string config_file_name = "config.txt";
 
 // Тип ячейки
 typedef	bool	cell_t;

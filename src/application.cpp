@@ -38,8 +38,10 @@ application::~application( void ) {
 	delete _online_tetris_settings;
 	delete _pf;
 	delete _cf;
-	delete _figure_cf;
-	delete _figure_pf;
+	delete _current_figure_cf;
+	delete _current_figure_pf;
+	delete _previous_figure_cf;
+	delete _previous_figure_pf;
 	delete _tetris_ai;
 	delete _keypress_emulator;
 }
@@ -47,6 +49,32 @@ application::~application( void ) {
 bool application::_init( void ) {
 	// Флаг успешной инициализации
 	bool ok_flag = 1;
+
+	// Поиск окна приложения с тетрисом по имени
+	std::ifstream *file = new std::ifstream;
+	std::string app_name = "default";
+	file->open( "config.txt", std::ios::in );
+	if ( file->is_open( ) )
+		std::getline( *file, app_name );
+	else {
+		std::cout << "Cannot found config.txt";
+		ok_flag = 0;
+	}
+	file->close( );
+	delete file;
+
+	std::cout << "Searching for application..." << "\n";
+	// Поиск окна по имени
+	_window_hwnd = NULL;
+	while( !_window_hwnd )
+		_window_hwnd = FindWindow( 0, app_name.c_str( ) );	// from global
+	std::cout << "Application found!\n";
+
+	// Разворачивание окна на передний план
+	SetForegroundWindow( _window_hwnd );
+
+	// Создание и запуск класса эмуляции нажатия на кнопки
+	_keypress_emulator = new keypress_emulator_c( std::chrono::milliseconds( key_press_timeout_msec ), _window_hwnd );
 
 	// SFML
 	_sf_font		= new sf::Font;
@@ -60,20 +88,6 @@ bool application::_init( void ) {
 		_sf_text->setCharacterSize( 14 );
 	} else
 		ok_flag = 0;
-
-	// proc
-	std::cout << "Searching for application..." << "\n";
-
-	// Поиск окна по имени
-	while( !_window_hwnd )
-		_window_hwnd = FindWindow( 0, working_app_name.c_str( ) );	// from global
-	std::cout << "Application found!\n";
-
-	// Разворачивание окна на передний план
-	SetForegroundWindow( _window_hwnd );
-
-	// Создание и запуск класса эмуляции нажатия на кнопки
-	_keypress_emulator = new keypress_emulator_c( std::chrono::milliseconds( key_press_timeout_msec ), _window_hwnd );
 
 	// Создание своего окна
 	_sf_render_window = new sf::RenderWindow( sf::VideoMode( window_size_x, window_size_y ), "Fearscape AI" );
@@ -112,42 +126,66 @@ bool application::_init( void ) {
 	_pf = new pixel_field_c( sf::Vector2i( global_field_size_x, global_field_size_y ) );
 	_cf = new cell_field_c( sf::Vector2i( global_field_size_x, global_field_size_y ) );
 
-	_figure_pf = new pixel_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
-	_figure_cf = new cell_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
+	_current_figure_pf = new pixel_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
+	_current_figure_cf = new cell_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
+
+	_previous_figure_pf = new pixel_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
+	_previous_figure_cf = new cell_field_c( sf::Vector2i( global_figure_size_x, global_figure_size_x ) );
+
+	// Оставляю в _previous_figure_pf мусор, чтобы не срабатывало сравнение
+	_previous_figure_pf->set( sf::Vector2i( 0, 0 ), sf::Color::Blue );
 
 	// Инициализация ИИ
 	_tetris_ai		= new tetris_ai_c;
 	_field_height	= nullptr;
 	_field_holes	= 0;
 
+	// Другое
+	_figure_counter = 0;
+
 	return ok_flag;
 }
 
 void application::_logic( void ) {
 
-	// Взятие поля цветов с экрана
+	// Взятие игрового поля с экрана и конвертирование в поле ячеек с игнорированием двух линий сверху
+	// ====
 	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( screen_start_field_x, screen_start_field_y ),
 	                               sf::Vector2i( screen_block_size, screen_block_size ) );
-	// Конвертирование поля цветов в поле ячеек с игнорированием двух линий сверху поля
-	if ( !_pf->convert_to_cellfield( _cf, _online_tetris_settings, 2 ) )
-		std::cout << __PRETTY_FUNCTION__ << "-> convert field error\n";
+	_pf->convert_to_cellfield( _cf, _online_tetris_settings, 2 );	// bool
+	// ====
 
-	// Взятие поля цветов фигуры с экрана
-	_fill_pixel_field_from_screen( _figure_pf,	sf::Vector2i( screen_start_figure_x, screen_start_figure_y ),
+
+	// Взятие поля следующей фигуры с экрана
+	// ====
+	_fill_pixel_field_from_screen( _current_figure_pf,	sf::Vector2i( screen_start_figure_x, screen_start_figure_y ),
 	                               sf::Vector2i( screen_block_size, screen_block_size ) );
-	// Конвертирование поля цветов в поле ячеек
-	if ( !_figure_pf->convert_to_cellfield( _figure_cf, _online_tetris_settings ) )
-		std::cout << __PRETTY_FUNCTION__ << "-> convert figure error\n";
-	if ( _figure->set_from_cell_field( _figure_cf, _online_tetris_settings ) ) {
-		// Если фигура успешно определена
 
-		// Определение перемещения и вращения фигуры по одному из алгоритмов AI
-		_move_variant	= _tetris_ai->ai_calc_bm_noholes( _cf, _figure );
+	// Если изменилась следующая фигура, значит нужно делать ход по предыдущей
+	if ( *_current_figure_pf != *_previous_figure_pf ) {
 
-		// После расчета хода можно взять следующие параметры
-		_field_height	= _tetris_ai->get_current_height( );
-		_field_holes	= _tetris_ai->get_current_holes_count( );
+		// Получение поля ячеек
+		_previous_figure_pf->convert_to_cellfield( _previous_figure_cf, _online_tetris_settings );	// bool
+
+		// Если фигура успешно определена по полю ячеек
+		if ( _figure->set_from_cell_field( _previous_figure_cf, _online_tetris_settings ) ) {
+
+			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
+			_move_variant	= _tetris_ai->ai_calc_simple_placer( _cf, _figure );
+
+			// Эмуляция нажатия кнопок
+			_keypress_emulator->add_keypress_to_queue( &_move_variant );
+
+			// После расчета хода можно взять следующие параметры
+			_field_height	= _tetris_ai->get_current_height( );
+			_field_holes	= _tetris_ai->get_current_holes_count( );
+
+			_figure_counter++;
+		}
+
+		*_previous_figure_pf = *_current_figure_pf;
 	}
+	// ====
 }
 
 void application::_render( void ) {
@@ -184,15 +222,34 @@ void application::_render( void ) {
 	buf_str += _figure->get_type_char( );
 	_render_text( sf::Vector2f( 9.0f, 212.0f ), buf_str );
 
-	// Render figure
-	_render_text( sf::Vector2f( 9.0f, 225.0f ), "next figure:" );
+	// Render previous figure
+	_render_text( sf::Vector2f( 9.0f, 225.0f ), "prev figure:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
 	for ( unsigned x = 0; x < global_figure_size_x; x++ )
 		for ( unsigned y = 0; y < global_figure_size_y; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 35.0f, y * 10.0f + 245.0f ) );
-			_sf_rect_shape->setFillColor( _figure_pf->get( sf::Vector2i( x, y ) ) );
+			_sf_rect_shape->setFillColor( _previous_figure_pf->get( sf::Vector2i( x, y ) ) );
 			_sf_render_window->draw( *_sf_rect_shape );
 		}
+
+	// Render field size
+	buf_str.clear( );
+	buf_str += "x size: " + std::to_string( global_field_size_x );
+	_render_text( sf::Vector2f( 120.0f, 225.0f ), buf_str );
+
+	buf_str.clear( );
+	buf_str += "y size: " + std::to_string( global_field_size_y );
+	_render_text( sf::Vector2f( 120.0f, 237.0f ), buf_str );
+
+	// Render count of holes
+	buf_str.clear( );
+	buf_str += "holes: " + std::to_string( _field_holes );
+	_render_text( sf::Vector2f( 120.0f, 249.0f ), buf_str );
+
+	// Render figure counter
+	buf_str.clear( );
+	buf_str += "fig ctr: " + std::to_string( _figure_counter );
+	_render_text( sf::Vector2f( 120.0f, 261.0f ), buf_str );
 
 	// Render height line
 	_render_text( sf::Vector2f( 78.0f, 285.0f ), "height:" );
@@ -211,19 +268,31 @@ void application::_render( void ) {
 		_sf_text->setString( "no height received" );
 	_sf_render_window->draw( *_sf_text );
 
-	// Render field size
+	// Render move variant
 	buf_str.clear( );
-	buf_str += "x size: " + std::to_string( global_field_size_x );
-	_render_text( sf::Vector2f( 120.0f, 225.0f ), buf_str );
+	buf_str = "move variant: ";
+	_render_text( sf::Vector2f( 52.0f, 315.0f ), buf_str );
 
 	buf_str.clear( );
-	buf_str += "y size: " + std::to_string( global_field_size_y );
-	_render_text( sf::Vector2f( 120.0f, 237.0f ), buf_str );
+	buf_str += "pos: ";
+	if ( _field_height )	// Если высота получена, значит и _move_variant заполнен
+		buf_str += std::to_string( _move_variant.position );
+	else
+		buf_str += "n/a";
+	_render_text( sf::Vector2f( 25.0f, 330.0f ), buf_str );
 
-	// Render count of holes
 	buf_str.clear( );
-	buf_str += "holes: " + std::to_string( _field_holes );
-	_render_text( sf::Vector2f( 120.0f, 249.0f ), buf_str );
+	buf_str += "rot: ";
+	if ( _field_height )	// Если высота получена, значит и _move_variant заполнен
+		buf_str += std::to_string( _move_variant.rotation );
+	else
+		buf_str += "n/a";
+	_render_text( sf::Vector2f( 118.0f, 330.0f ), buf_str );
+
+	// Render key queue size
+	buf_str.clear( );
+	buf_str = "key queue count: " + std::to_string( _keypress_emulator->get_keyqueue_count( ) );
+	_render_text( sf::Vector2f( 25.0f, 345.0f ), buf_str );
 
 	// double buff
 	_sf_render_window->display( );

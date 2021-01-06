@@ -21,11 +21,11 @@ class keypress_emulator_c {
 	public:
 		// Конструктор с указанием задержки между нажатиями кнопок и между нажатиями кнопок,
 		// и хэндла окна, которому отправлять события
-		keypress_emulator_c( std::chrono::milliseconds key_press_delay, HWND window_handler );
+		keypress_emulator_c( std::chrono::milliseconds key_press_delay, HWND window_handle );
 		~keypress_emulator_c( void );
 
 		// Метод добавления задачи в очередь кнопок
-		void add_keypress_to_queue( tetris_ai_c::move_variant_s move_variant );
+		void add_keypress_to_queue( tetris_ai_c::move_variant_s *move_variant );
 
 		// Метод возвращает количество оставшихся кнопок в очереди
 		std::size_t get_keyqueue_count( void );
@@ -47,7 +47,7 @@ class keypress_emulator_c {
 		std::mutex	_thread_mutex;
 
 		// Хэндл окна, которому отправлять события
-		HWND		_window_handler;
+		HWND		_window_handle;
 };
 
 #endif // KEYPRESS_EMULATOR_HPP

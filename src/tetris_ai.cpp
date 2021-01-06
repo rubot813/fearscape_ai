@@ -16,6 +16,37 @@ uint8_t	tetris_ai_c::get_current_holes_count( void ) {
 	return _holes;
 }
 
+tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_simple_placer( cell_field_c *cell_field, figure_c *figure ) {
+
+	// Расчет высот столбцов поля
+	_height = _calculate_height( cell_field );
+
+	// Расчет количества отверстий
+	_holes = _calculate_holes( cell_field );
+
+	// Итоговый вариант хода
+	move_variant_s move_variant;
+	move_variant.position = 0;
+	move_variant.rotation = figure_c::rt_standart;
+
+	return move_variant;
+}
+
+tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_random( cell_field_c *cell_field, figure_c *figure ) {
+	// Расчет высот столбцов поля
+	_height = _calculate_height( cell_field );
+
+	// Расчет количества отверстий
+	_holes = _calculate_holes( cell_field );
+
+	// Итоговый вариант хода
+	move_variant_s move_variant;
+	move_variant.position = 0;
+	move_variant.rotation = figure_c::rt_standart;
+
+	return move_variant;
+}
+
 tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_field, figure_c *figure ) {
 	// Расчет высот столбцов поля
 	_height = _calculate_height( cell_field );
@@ -35,8 +66,6 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_
 	// крутим пока можем, опять опускаем
 	// сдвигаем фигуру направо, пока можем
 	// в начало цикла
-
-
 
 	return move_variant;
 }
