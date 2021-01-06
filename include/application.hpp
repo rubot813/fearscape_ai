@@ -59,6 +59,9 @@ class application {
 		// Счетчик фигур
 		std::size_t				_figure_counter;
 
+		// Имя алгоритма, который кладет текущую фигуру
+		std::string				*_ai_alg_name;
+
 		// Вариант перемещения фигуры
 		tetris_ai_c::move_variant_s _move_variant;
 

@@ -2,6 +2,7 @@
 
 tetris_ai_c::tetris_ai_c( void ) {
 	_height.data.clear( );
+	srand( static_cast< std::size_t >( time( NULL ) ) );
 }
 
 tetris_ai_c::~tetris_ai_c( void ) {
@@ -14,6 +15,10 @@ tetris_ai_c::height_s* tetris_ai_c::get_current_height( void ) {
 
 uint8_t	tetris_ai_c::get_current_holes_count( void ) {
 	return _holes;
+}
+
+std::string* tetris_ai_c::get_ai_alg_name( void ) {
+	return &_ai_alg_name;
 }
 
 tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_simple_placer( cell_field_c *cell_field, figure_c *figure ) {
@@ -29,6 +34,7 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_simple_placer( cell_field_c *ce
 	move_variant.position = 0;
 	move_variant.rotation = figure_c::rt_standart;
 
+	_ai_alg_name = __FUNCTION__;
 	return move_variant;
 }
 
@@ -41,9 +47,11 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_random( cell_field_c *cell_fiel
 
 	// Итоговый вариант хода
 	move_variant_s move_variant;
-	move_variant.position = 0;
-	move_variant.rotation = figure_c::rt_standart;
 
+	move_variant.position = rand( ) % 7 - 3;									// -3 .. 4
+	move_variant.rotation = static_cast< figure_c::rotation_e >( rand( ) % 3 );	// 0 .. 3
+
+	_ai_alg_name = __FUNCTION__;
 	return move_variant;
 }
 
@@ -67,6 +75,7 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_
 	// сдвигаем фигуру направо, пока можем
 	// в начало цикла
 
+	_ai_alg_name = __FUNCTION__;
 	return move_variant;
 }
 

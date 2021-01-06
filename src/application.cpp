@@ -90,7 +90,7 @@ bool application::_init( void ) {
 		ok_flag = 0;
 
 	// Создание своего окна
-	_sf_render_window = new sf::RenderWindow( sf::VideoMode( window_size_x, window_size_y ), "Fearscape AI" );
+	_sf_render_window = new sf::RenderWindow( sf::VideoMode( window_size_x, window_size_y ), "Fearscape AI", sf::Style::Titlebar | sf::Style::Close );
 	_sf_render_window->setFramerateLimit( 60 );
 
 	// Цвета блоков
@@ -142,6 +142,7 @@ bool application::_init( void ) {
 
 	// Другое
 	_figure_counter = 0;
+	_ai_alg_name = nullptr;
 
 	return ok_flag;
 }
@@ -171,15 +172,15 @@ void application::_logic( void ) {
 		if ( _figure->set_from_cell_field( _previous_figure_cf, _online_tetris_settings ) ) {
 
 			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
-			_move_variant	= _tetris_ai->ai_calc_simple_placer( _cf, _figure );
+			_move_variant	= _tetris_ai->ai_calc_random( _cf, _figure );
 
 			// Эмуляция нажатия кнопок
 			_keypress_emulator->add_keypress_to_queue( &_move_variant );
 
-			// После расчета хода можно взять следующие параметры
+			// После расчета хода можно взять следующие параметры для отладки
 			_field_height	= _tetris_ai->get_current_height( );
 			_field_holes	= _tetris_ai->get_current_holes_count( );
-
+			_ai_alg_name	= _tetris_ai->get_ai_alg_name( );
 			_figure_counter++;
 		}
 
@@ -293,6 +294,15 @@ void application::_render( void ) {
 	buf_str.clear( );
 	buf_str = "key queue count: " + std::to_string( _keypress_emulator->get_keyqueue_count( ) );
 	_render_text( sf::Vector2f( 25.0f, 345.0f ), buf_str );
+
+	// Render AI algorithm name
+	buf_str.clear( );
+	buf_str = "ai alg: ";
+	if ( _ai_alg_name )
+		buf_str += *_ai_alg_name;
+	else
+		buf_str += "n/a";
+	_render_text( sf::Vector2f( 10.0f, 360.0f ), buf_str );
 
 	// double buff
 	_sf_render_window->display( );

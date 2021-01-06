@@ -25,14 +25,14 @@ const unsigned	screen_block_size		= 24;
 
 // Размеры отладочного окна
 const unsigned	window_size_x			= 215;
-const unsigned	window_size_y			= 380;
+const unsigned	window_size_y			= 390;
 
 // Общее количество фигур
 const uint8_t	figure_count			= 7;
 
 // Время удержания кнопки при эмуляции нажатия,
 // а также время между нажатиями кнопок
-const unsigned	key_press_timeout_msec	= 200;
+const unsigned	key_press_timeout_msec	= 75;
 
 // Имя конфиг - файла, обязательно в кодировке CP-1251 ( Windows-1251 )
 const std::string config_file_name = "config.txt";
