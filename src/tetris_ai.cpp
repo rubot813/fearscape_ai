@@ -96,9 +96,6 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 	// Копия фигуры
 	figure_c fg = *figure;
 
-	// Копия поля
-	cell_field_c cf = *cell_field;
-
 	// Итоговый вариант хода
 	move_variant_s move_variant;
 
@@ -116,13 +113,20 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 		if ( !f_projection.get_left_offset( &left_offset ) )
 			std::cout << __FUNCTION__ << " -> get left offset error\n";
 
-		uint8_t right_offset	= 0;
+		uint8_t right_offset = 0;
 		if ( !f_projection.get_right_offset( &right_offset ) )
 			std::cout << __FUNCTION__ << " -> get right offset error\n";
 
 		// Цикл по всем вариантам постановки фигуры с данным вращением
 		for ( int8_t hor_pos = -left_offset; hor_pos <= ( field_size_x_c - figure_size_x_c + right_offset ); hor_pos++ ) {
 
+			// Копия поля, чтобы не испортить указатель
+			cell_field_c cf = *cell_field;
+
+			if ( fg.place_to_cellfield( &cf, hor_pos ) ) {
+
+			} else
+				std::cout << "Error\n";
 		}
 	}
 

@@ -36,16 +36,16 @@ std::size_t cell_field_c::get_count( void ) {
 
 cell_t cell_field_c::get( sf::Vector2i pos ) {
 	bool val = false;
-	if ( pos.x < _field_size.x && pos.y < _field_size.y &&
+	if ( 	pos.x < _field_size.x && pos.y < _field_size.y &&
 	        pos.x >= 0 && pos.y >= 0 )
 		val = _field.at( pos.x + pos.y * _field_size.x );
 	else
-		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
+		std::cout << __PRETTY_FUNCTION__ << " -> error: " << pos.x << ", " << pos.y << "\n";
 	return val;
 }
 
 bool cell_field_c::set( sf::Vector2i pos, cell_t val ) {
-	if ( pos.x < _field_size.x && pos.y < _field_size.y &&
+	if ( 	pos.x < _field_size.x && pos.y < _field_size.y &&
 	        pos.x >= 0 && pos.y >= 0 ) {
 		_field.at( pos.x + pos.y * _field_size.x ) = val;
 		return true;
@@ -60,6 +60,15 @@ bool cell_field_c::set( uint8_t id, cell_t val ) {
 		return true;
 	} else
 		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
+	return false;
+}
+
+bool cell_field_c::check( sf::Vector2i pos, bool *value ) {
+	if (	pos.x < _field_size.x && pos.y < _field_size.y &&
+	        pos.x >= 0 && pos.y >= 0 ) {
+		*value = _field.at( pos.x + pos.y * _field_size.x );
+		return true;
+	}
 	return false;
 }
 

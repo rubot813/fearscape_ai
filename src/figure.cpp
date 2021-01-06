@@ -98,13 +98,17 @@ figure_c::projection_s figure_c::get_horizontal_projection( void ) {
 		proj.valid = 1;
 		for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
 			buffer_value = 0;
-			for ( uint8_t y = figure_size_y_c - 1; y > 0; y-- )
-				if ( cf.get( sf::Vector2i( x, y ) ) ) {
-					buffer_value = 1;
-					break;
-				}
+			for ( uint8_t y = figure_size_y_c - 1; y > 0; y-- ) {
+				bool value = 0;
+				if ( cf.check( sf::Vector2i( x, y ), &value ) ) {
+					if ( value ) {
+						buffer_value = 1;
+						break;
+					}
+				}	// if check
+			}	// for y
 			proj.data.push_back( buffer_value );
-		}	// for
+		}	// for x
 	}	// if
 	return  proj;
 }
@@ -117,13 +121,17 @@ figure_c::projection_s figure_c::get_horizontal_projection( cell_field_c *cell_f
 		proj.valid = 1;
 		for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
 			buffer_value = 0;
-			for ( uint8_t y = figure_size_y_c - 1; y > 0; y-- )
-				if ( cell_field->get( sf::Vector2i( x, y ) ) ) {
-					buffer_value = 1;
-					break;
-				}
+			for ( uint8_t y = figure_size_y_c - 1; y > 0; y-- ) {
+				bool value = 0;
+				if ( cell_field->check( sf::Vector2i( x, y ), &value ) ) {
+					if ( value ) {
+						buffer_value = 1;
+						break;
+					}
+				}	// if check
+			}	// for y
 			proj.data.push_back( buffer_value );
-		}	// for
+		}	// for x
 	}	// if
 	return  proj;
 }
@@ -144,7 +152,7 @@ bool figure_c::is_can_place( uint8_t field_size_h, int8_t hor_position ) {
 			int8_t proj_pos_x	= hor_position + x + 3;						// Горизонтальное положение текущей ячейки на поле
 
 			// Проверка, будет ли часть фигуры находиться за полем
-			if ( proj_value && ( ( proj_pos_x < 0 ) || ( proj_pos_x > field_size_h ) ) ) {
+			if ( proj_value && ( ( proj_pos_x < 0 ) || ( x + 3 > field_size_h ) ) ) {
 				ok_flag = 0;
 				break;
 			}
@@ -157,17 +165,31 @@ bool figure_c::is_can_place( uint8_t field_size_h, int8_t hor_position ) {
 bool figure_c::is_can_place( cell_field_c *cell_field, sf::Vector2i position ) {
 	bool ok_flag = 1;	// Флаг, что все успешно
 	cell_field_c figure_cf = get_cellfield( );	// Поле фигуры
+
+	// Проход по полю фигуры
 	for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
 		for ( uint8_t y = 0; y < figure_size_y_c; y++ ) {
-			if (	figure_cf.get( sf::Vector2i( x, y ) ) &&
-			        cell_field->get(  sf::Vector2i( x, y ) + position ) ) {
-				ok_flag = 0;
-				break;
-			}
-		}
+			// Проверка, занята ли ячейка фигуры
+			bool figure_check = 0;
+			if ( figure_cf.check( sf::Vector2i( x, y ), &figure_check ) ) {
+				// Ячейка существует и занята
+				if ( figure_check ) {
+					// Проверка, существует и занята ли ячейка на поле
+					sf::Vector2i pos = sf::Vector2i( x + position.x, y + position.y );
+					bool field_check = 0;
+					if ( cell_field->check( pos, &field_check ) ) {
+						// Ячейка существует и занята = выход из цикла
+						if ( field_check ) {
+							ok_flag = 0;
+							break;
+						}
+					}	// field check
+				}	// figure check
+			}	// figure check
+		}	// for y
 		if ( !ok_flag )
 			break;
-	}
+	}	// for x
 	return ok_flag;
 }
 
@@ -177,26 +199,15 @@ bool figure_c::place_to_cellfield( cell_field_c *cell_field, int8_t hor_position
 	// Сохраняю поле ячеек
 	cell_field_c cf_buffer = *cell_field;
 
-	// Проход по полю сверху вниз
-	for ( uint8_t y = 0; y < field_size_y_c; y++ ) {
-		// Если не можем расположить фигуру в данном месте
-		if ( !is_can_place( cell_field, sf::Vector2i( hor_position, y ) ) ) {
-			if ( y > 0 ) {
-				// Пробуем установить фигуру на ячейку выше
-				if ( apply_to_cellfield( cell_field,  sf::Vector2i( hor_position, y - 1 ) ) ) {
-					ok_flag = 1;
-					break;
-				} else {
-					std::cout << __FUNCTION__ << " -> error, cannot apply figure. field is full?";
-					break;
-				}
-			} else {
-				// Если поле заполнено
-				std::cout << __FUNCTION__ << " -> error, y == 0. field is full?";
+	// Проход по полю снизу вверх
+	for ( uint8_t y = field_size_y_c - 1; y >= 0; y-- ) {
+		// Если можем расположить фигуру в данном месте
+		if ( is_can_place( cell_field, sf::Vector2i( hor_position, y ) ) )
+			if ( apply_to_cellfield( cell_field,  sf::Vector2i( hor_position, y - 1 ) ) ) {
+				ok_flag = 1;
 				break;
 			}
-
-		}	// ifn is_can_place
+		// else field is full
 	}	// for
 
 	return ok_flag;
@@ -209,16 +220,24 @@ bool figure_c::apply_to_cellfield( cell_field_c *cell_field, sf::Vector2i positi
 	// Проход по полю фигуры
 	for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
 		for ( uint8_t y = 0; y < figure_size_y_c; y++ ) {
-			// Если в данном месте на поле фигуры ячейка заполнена
+			// Если ячейка фигуры заполнена
 			if ( figure_cf.get( sf::Vector2i( x, y ) ) ) {
-				// Если ячейка на поле пуста
-				if ( !cell_field->get(  sf::Vector2i( x, y ) + position ) )
-					cell_field->set( sf::Vector2i( x, y ) + position, 1 );
-				else {
-					ok_flag = 0;
-					break;
-				}
-			}	// if
+
+				// Проверка, пуста ли ячейка на поле
+				sf::Vector2i pos = sf::Vector2i( position.x + x, position.y + y );
+				bool field_value = 0;
+				if ( cell_field->check( pos, &field_value ) ) {
+					// Ячейка существует, если она не заполнена
+					if ( !field_value )
+						// Заполнение, переход к следующей ячейке
+						cell_field->set( pos, 1 );
+					else {
+						// Ячейка существует и заполнена = ошибка, выход
+						ok_flag = 0;
+						break;
+					}
+				}	// field check
+			}	// get figure
 		}	// for y
 		if ( !ok_flag )
 			break;
