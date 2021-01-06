@@ -41,8 +41,11 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_simple_placer( cell_field_c *ce
 
 	// Итоговый вариант хода
 	move_variant_s move_variant;
+
+	// = = = = =
 	move_variant.position = 0;
 	move_variant.rotation = figure_c::rt_standart;
+	// = = = = =
 
 	_ai_alg_name = __FUNCTION__;
 	return move_variant;
@@ -58,8 +61,10 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_random( cell_field_c *cell_fiel
 	// Итоговый вариант хода
 	move_variant_s move_variant;
 
+	// = = = = =
 	move_variant.position = rand( ) % 7 - 3;									// -3 .. 4
 	move_variant.rotation = static_cast< figure_c::rotation_e >( rand( ) % 3 );	// 0 .. 3
+	// = = = = =
 
 	_ai_alg_name = __FUNCTION__;
 	return move_variant;
@@ -74,6 +79,13 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_calc_bm_noholes( cell_field_c *cell_
 
 	// Итоговый вариант хода
 	move_variant_s move_variant;
+
+	// = = = = =
+	// if ( figure->is_can_place( global_field_size_x, 5 ) )
+	// 	std::cout << "CAN PLACE\n";
+	if ( figure->is_can_place( cell_field, sf::Vector2i( 0, 16 ) ) )
+		std::cout << "CAN PLACE\n";
+	// = = = = =
 
 	_ai_alg_name = __FUNCTION__;
 	return move_variant;

@@ -5,8 +5,8 @@
 #include <SFML/Graphics/Color.hpp>
 
 // Размеры поля
-const unsigned	global_field_size_x		= 10;
-const unsigned	global_field_size_y		= 20;
+const unsigned	global_field_size_x		= 10;	// Горизонтальное
+const unsigned	global_field_size_y		= 20;	// Вертикальное
 
 // Размеры превью фигуры ( не менять, описаны в вики )
 const unsigned	global_figure_size_x	= 4;

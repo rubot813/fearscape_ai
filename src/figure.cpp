@@ -164,31 +164,60 @@ figure_c::projection_s figure_c::get_horizontal_projection( cell_field_c *cell_f
 	return  proj;
 }
 
-bool figure_c::is_can_place( cell_field_c *cell_field, int8_t position ) {
-	bool ok_flag = 0;
+bool figure_c::is_can_place( uint8_t field_size_h, int8_t hor_position ) {
+	bool ok_flag = 0;	// Флаг, что все успешно
 
-    // Сохраняю поле ячеек
-    cell_field_c cf_buffer = *cell_field;
+	// Получаю поле фигуры и проекцию фигуры
+	cell_field_c figure_cf		= get_cellfield( );
+	projection_s fig_hor_proj	= get_horizontal_projection( &figure_cf );
 
-    // Получаю битовое поле и проекцию фигуры
-    cell_field_c figure_cf = get_cellfield( );
-    projection_s fig_hor_proj = get_horizontal_projection( &figure_cf );
-    if ( fig_hor_proj.valid ) {
+	// Если проекция верна
+	if ( fig_hor_proj.valid ) {
 		ok_flag = 1;
+		// Проход по проекции фигуры
+		for ( uint8_t x = 0; x < fig_hor_proj.data.size( ); x++ ) {
+			bool proj_value		= fig_hor_proj.data.at( x );				// Значение проекции фигуры 0 .. n
+			int8_t proj_pos_x	= hor_position + x + 3;						// Горизонтальное положение текущей ячейки на поле
 
-    }
+			// Проверка, будет ли часть фигуры находиться за полем
+			if ( proj_value && ( ( proj_pos_x < 0 ) || ( proj_pos_x > field_size_h ) ) ) {
+				ok_flag = 0;
+				break;
+			}
+		}	// for
+	}	// is valid
 
-    return ok_flag;
+	return ok_flag;
 }
 
-bool figure_c::place_on_cellfield( cell_field_c *cell_field, int8_t position ) {
-    bool ok_flag = 1;	// Флаг, что все успешно
+bool figure_c::is_can_place( cell_field_c *cell_field, sf::Vector2i position ) {
+	bool ok_flag = 1;	// Флаг, что все успешно
+	cell_field_c figure_cf = get_cellfield( );	// Поле фигуры
+	for ( uint8_t x = 0; x < global_figure_size_x; x++ ) {
+		for ( uint8_t y = 0; y < global_figure_size_y; y++ ) {
+			if (	figure_cf.get( sf::Vector2i( x, y ) ) &&
+			        cell_field->get(  sf::Vector2i( x, y ) + position ) ) {
+				ok_flag = 0;
+				break;
+			}
+		}
+		if ( !ok_flag )
+			break;
+	}
 
-    // Сохраняю поле ячеек
-    cell_field_c cf_buffer = *cell_field;
+	return ok_flag;
+}
+
+bool figure_c::place_on_cellfield( cell_field_c *cell_field, int8_t hor_position ) {
+	bool ok_flag = 1;	// Флаг, что все успешно
+
+	// Сохраняю поле ячеек
+	cell_field_c cf_buffer = *cell_field;
 
 
-    return ok_flag;
+
+
+	return ok_flag;
 }
 
 // ==== projection_s ====

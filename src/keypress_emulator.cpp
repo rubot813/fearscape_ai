@@ -17,7 +17,7 @@ void keypress_emulator_c::add_keypress_to_queue( tetris_ai_c::move_variant_s *mo
 	_thread_mutex.lock( );
 
 	// Вращение блока
-    for ( uint8_t i = 0; i < move_variant->rotation; i++ )
+	for ( uint8_t i = 0; i < move_variant->rotation; i++ )
 		_key_queue.push( VK_UP );
 
 	// Перемещение блока

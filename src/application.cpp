@@ -175,7 +175,7 @@ void application::_logic( void ) {
 			_move_variant	= _tetris_ai->ai_calc_bm_noholes( _cf, _figure );
 
 			// Эмуляция нажатия кнопок
-			// _keypress_emulator->add_keypress_to_queue( &_move_variant );
+			_keypress_emulator->add_keypress_to_queue( &_move_variant );
 
 			// После расчета хода можно взять следующие параметры для отладки
 			_field_height	= _tetris_ai->get_height( );

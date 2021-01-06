@@ -79,15 +79,24 @@ class figure_c {
 		projection_s get_horizontal_projection( cell_field_c *cell_field );
 
 		// Метод возвращает, возможно ли положить фигуру в заданную горизонтальную позицию
-		// в заданном поле ячеек
-		// ( где 0 - начальное положение фигуры, на поле y = 3 )
-		bool is_can_place( cell_field_c *cell_field, int8_t position );
+		// в поле с заданным размером по горизонтали
+		// ( где 0 - начальное положение фигуры, обозначает на поле y = 3 )
+		// Вернет true если успешно
+		// Вернет false если занятая клетка фигуры выходит за пределы поля cell_field
+		bool is_can_place( uint8_t field_size_h, int8_t hor_position );
+
+		// Метод возвращает, возможно ли положить фигуру в заданную позицию на указанном поле
+		// ( где 0 - начальное положение фигуры, обозначает на поле y = 3 )
+		// Значения position могут быть отрицательными
+		// Вернет true если успешно
+		// Вернет false если одна из ячеек на поле занята
+		bool is_can_place( cell_field_c *cell_field, sf::Vector2i position );
 
 		// Метод принимает поле ячеек и горизонтальную позицию для фигуры
 		// ( где 0 - начальное положение фигуры, на поле y = 3 )
 		// Меняет поле на поле с фигурой, упавшей на него сверху
 		// Вернет true если успешно
-		bool place_on_cellfield( cell_field_c *cell_field, int8_t position );
+		bool place_on_cellfield( cell_field_c *cell_field, int8_t hor_position );
 
 	private:
 		// Тип фигуры
