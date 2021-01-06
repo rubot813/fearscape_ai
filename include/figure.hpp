@@ -9,6 +9,9 @@ class figure_c {
 		figure_c( void );
 		~figure_c( void );
 
+		// Перегрузка операторов
+		figure_c& operator=( const figure_c &f );
+
 		// Перечисления типов фигур
 		enum type_e {
 			I	= 0,	// 0

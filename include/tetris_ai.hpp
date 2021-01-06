@@ -49,7 +49,7 @@ class tetris_ai_c {
 		std::string* get_ai_alg_name( void );
 
 		// Метод возвращает длительность работы последнего алгоритма AI в миллисекундах
-	std::chrono::milliseconds * get_ai_calc_time( void );
+		std::chrono::milliseconds * get_ai_calc_time( void );
 
 		// Алгоритм просто кладет фигуру вниз без стратегии
 		// Для тестов
@@ -70,6 +70,9 @@ class tetris_ai_c {
 
 		// Метод считает количество отверстий в заданном поле
 		uint8_t _calculate_holes( cell_field_c *cell_field );
+
+		// Метод считает количество заполненных горизонтальных линий в заданном поле
+		uint8_t _calculate_lines( cell_field_c *cell_field );
 
 		// Высота последнего посчитанного поля ( 0 - нет блока, 1 - n количество блоков по вертикали )
 		// Размер зависит от ширины поля cell_field_c

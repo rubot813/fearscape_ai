@@ -93,8 +93,35 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 	// Расчет количества отверстий
 	_holes = _calculate_holes( cell_field );
 
+	// Копия фигуры
+	figure_c fg = *figure;
+
+	// Копия поля
+	cell_field_c cf = *cell_field;
+
 	// Итоговый вариант хода
 	move_variant_s move_variant;
+
+	// Цикл по вращениям фигуры
+	for ( uint8_t rot = 0; rot < 4; rot++ ) {
+
+		// Установка поворота фигуры
+		fg.set_rotation( static_cast< figure_c::rotation_e >( rot ) );
+
+		// Получение проекции фигуры
+		figure_c::projection_s f_projection = fg.get_horizontal_projection( );
+
+		// Получение количества пустых горизонтальных линий с краев фигуры
+		uint8_t left_offset = 0;
+		if ( !f_projection.get_left_offset( &left_offset ) )
+			std::cout << __FUNCTION__ << " -> get left offset error\n";
+
+		uint8_t right_offset	= 0;
+		if ( !f_projection.get_right_offset( &right_offset ) )
+			std::cout << __FUNCTION__ << " -> get right offset error\n";
+
+		//
+	}
 
 	// = = = = =
 	/*
@@ -112,9 +139,9 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 }
 
 tetris_ai_c::height_s tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
-	// Создание поля и задание размера исходя из ширины поля
+	// Создание высоты и задание размера исходя из ширины поля
 	height_s height;
-	sf::Vector2i field_size = cell_field->get_size( );
+	sf::Vector2i field_size = cell_field->get_size( );		// Размер поля
 	height.data.resize( field_size.x, 0 );
 	height.valid = 1;
 
@@ -135,8 +162,7 @@ tetris_ai_c::height_s tetris_ai_c::_calculate_height( cell_field_c *cell_field )
 uint8_t tetris_ai_c::_calculate_holes( cell_field_c *cell_field ) {
 	uint8_t holes = 0;	// Счетчик отверстий
 	bool get_used;	// Флаг - встретили ли заполненную ячейку
-
-	sf::Vector2i field_size = cell_field->get_size( );
+	sf::Vector2i field_size = cell_field->get_size( );	// Размер поля
 
 	// Проход по полю
 	// Слева направо 0 .. n
@@ -153,5 +179,23 @@ uint8_t tetris_ai_c::_calculate_holes( cell_field_c *cell_field ) {
 		}
 	}
 	return holes;
+}
+
+uint8_t tetris_ai_c::_calculate_lines( cell_field_c *cell_field ) {
+	uint8_t lines = 0;	// Счетчик линий
+	sf::Vector2i field_size = cell_field->get_size( );	// Размер поля
+
+	// Проход по полю
+	// Сверху вниз 0 .. n
+	for ( uint8_t y = 0; y < field_size.x; y++ ) {
+		// Слева направо 0 .. n
+		for ( uint8_t x = 0; x < field_size.x; x++ ) {
+			if ( !cell_field->get( sf::Vector2i( x, y ) ) )
+				break;
+			else if ( x == field_size.x - 1 )
+				lines++;
+		}	// for x
+	}	// for y
+	return lines;
 }
 

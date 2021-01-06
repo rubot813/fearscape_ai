@@ -22,50 +22,14 @@ figure_c::~figure_c( void ) {
 	// np
 }
 
-figure_c::type_e figure_c::get_type( void ) {
-	return _type;
+figure_c& figure_c::operator=( const figure_c &f ) {
+	_type		= f._type;
+	_rotation	= f._rotation;
+	return *this;
 }
 
-char figure_c::get_type_char( void ) {
-	char c = 'u';
-	switch( _type ) {
-		case( I ) : {
-			c = 'I';
-			break;
-		}
-		case( J ) : {
-			c = 'J';
-			break;
-		}
-		case( L ) : {
-			c = 'L';
-			break;
-		}
-		case( O ) : {
-			c = 'O';
-			break;
-		}
-		case( S ) : {
-			c = 'S';
-			break;
-		}
-		case( T ) : {
-			c = 'T';
-			break;
-		}
-		case( Z ) : {
-			c = 'Z';
-			break;
-		}
-		case( unknown ) : {
-			c = 'u';
-			break;
-		}
-		default :
-			std::cout << __FUNCTION__ << " -> switch error\n";
-
-	}	// switch
-	return c;
+figure_c::type_e figure_c::get_type( void ) {
+	return _type;
 }
 
 void figure_c::set_rotation( figure_c::rotation_e rot ) {
@@ -261,6 +225,48 @@ bool figure_c::apply_to_cellfield( cell_field_c *cell_field, sf::Vector2i positi
 	}	// for x
 
 	return ok_flag;
+}
+
+char figure_c::get_type_char( void ) {
+	char c = 'u';
+	switch( _type ) {
+		case( I ) : {
+			c = 'I';
+			break;
+		}
+		case( J ) : {
+			c = 'J';
+			break;
+		}
+		case( L ) : {
+			c = 'L';
+			break;
+		}
+		case( O ) : {
+			c = 'O';
+			break;
+		}
+		case( S ) : {
+			c = 'S';
+			break;
+		}
+		case( T ) : {
+			c = 'T';
+			break;
+		}
+		case( Z ) : {
+			c = 'Z';
+			break;
+		}
+		case( unknown ) : {
+			c = 'u';
+			break;
+		}
+		default :
+			std::cout << __FUNCTION__ << " -> switch error\n";
+
+	}	// switch
+	return c;
 }
 
 // ==== projection_s ====
