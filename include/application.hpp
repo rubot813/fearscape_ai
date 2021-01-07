@@ -50,20 +50,11 @@ class application {
 		// Указатель на экземпляр класса ИИ
 		tetris_ai_c				*_tetris_ai;
 
-		// Значения высот столбцов поля
-		tetris_ai_c::height_s	*_field_height;
-
-		// Количество отверстий в поле
-		uint8_t					_field_holes;
+		// Отладочная информация tetris_ai
+		tetris_ai_c::ai_debug_data_s	_ai_debug_data;
 
 		// Счетчик фигур
 		std::size_t				_figure_counter;
-
-		// Имя алгоритма, который кладет текущую фигуру
-		std::string				*_ai_alg_name;
-
-		// Длительность работы последнего алгоритма AI
-		std::chrono::milliseconds *_ai_calc_time;
 
 		// Вариант перемещения фигуры
 		tetris_ai_c::move_variant_s _move_variant;

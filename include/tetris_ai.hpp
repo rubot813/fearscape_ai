@@ -38,36 +38,44 @@ class tetris_ai_c {
 			bool valid;						// Флаг верности данных
 		};
 
-		// Метод возвращает значение высот поля
-		height_s* get_height( void );
-
-		// Метод возвращает сумму высот поля
-		std::size_t	get_height_sum( void );
-
-		// Метод возвращает количество отверстий в поле
-		uint8_t	get_holes_count( void );
-
-		// Метод возвращает имя алгоритма AI, который вызывали последний раз
-		std::string* get_ai_alg_name( void );
-
-		// Метод возвращает длительность работы последнего алгоритма AI в миллисекундах
-		std::chrono::milliseconds * get_ai_calc_time( void );
+		// Структура отладочной информации по работе каждого алгоритма
+		struct ai_debug_data_s {
+			height_s					height;			// Высота поля
+			std::size_t					height_sum;		// Сумма высот поля
+			uint8_t						holes_count;	// Количество отверстий
+			std::string					alg_name;		// Имя алгоритма
+			std::chrono::milliseconds	calc_time;		// Длительность работы алгоритма
+		};
 
 		// Алгоритм просто кладет фигуру вниз без стратегии
 		// Для тестов
-		move_variant_s ai_alg_simple_placer( cell_field_c *cell_field, figure_c *figure );
+		move_variant_s ai_alg_simple_placer( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug );
 
 		// Алгоритм просто кладет фигуру в случайном месте со случайным вращением
 		// Для тестов
-		move_variant_s ai_alg_random( cell_field_c *cell_field, figure_c *figure );
+		move_variant_s ai_alg_random( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug );
 
-		// Алгоритм просчитывает все варианты постановки фигуры, и ищет наименьший по высоте без создания отверстий
+		// Алгоритм просчитывает все варианты постановки фигуры, и ищет наименьший вариант постановки по высоте без создания отверстий
 		// Если такой ход невозможен, возвращает вариант с наименьшей суммой высот высотой
-		move_variant_s ai_alg_bm_noholes( cell_field_c *cell_field, figure_c *figure );
+		move_variant_s ai_alg_bm( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug );
 
 	private:
 
-		// Метод рассчитывает значения высоты для заданного поля
+		// Структура очков. Чем больше значение score - тем лучше ход
+		struct _score_s {
+			float score;
+			tetris_ai_c::move_variant_s move_variant;
+
+			// Для отладки
+			// = = = =
+			cell_field_c *cf;
+			_score_s( void ) {
+				cf = new cell_field_c( sf::Vector2i( field_size_x_c, field_size_y_c ) );
+			}
+			// = = = =
+		};
+
+		// Метод считает значения высоты для заданного поля
 		height_s _calculate_height( cell_field_c *cell_field );
 
 		// Метод считает количество отверстий в заданном поле
@@ -78,21 +86,6 @@ class tetris_ai_c {
 
 		// Метод возвращает сумму высот заданного поля
 		std::size_t	_calculate_height_sum( height_s *height );
-
-		// Высота последнего посчитанного поля ( 0 - нет блока, 1 - n количество блоков по вертикали )
-		// Размер зависит от ширины поля cell_field_c
-		// Обновляется после вызовов методов ai_calc_
-		height_s _height;
-
-		// Количество отверстий последнего посчитанного поля
-		// Отверстие - пустая клетка над которой есть одна или более занятых
-		uint8_t	_holes;
-
-		// Имя алгоритма AI, который вызывали последний раз
-		std::string _ai_alg_name;
-
-		// Длительность работы последнего алгоритма AI в миллисекундах
-		std::chrono::milliseconds _calc_time;
 };
 
 #endif // TETRIS_AI_HPP

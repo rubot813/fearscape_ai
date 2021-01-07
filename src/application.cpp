@@ -137,13 +137,7 @@ bool application::_init( void ) {
 
 	// Инициализация ИИ
 	_tetris_ai		= new tetris_ai_c;
-	_field_height	= nullptr;
-	_field_holes	= 0;
-
-	// Другое
 	_figure_counter = 0;
-	_ai_alg_name = nullptr;
-	_ai_calc_time = nullptr;
 
 	return ok_flag;
 }
@@ -173,16 +167,11 @@ void application::_logic( void ) {
 		if ( _figure->set_from_cell_field( _previous_figure_cf, _online_tetris_settings ) ) {
 
 			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
-			_move_variant	= _tetris_ai->ai_alg_bm_noholes( _cf, _figure );
+			_move_variant	= _tetris_ai->ai_alg_bm( _cf, _figure, &_ai_debug_data );
 
 			// Эмуляция нажатия кнопок
 			_keypress_emulator->add_keypress_to_queue( &_move_variant );
 
-			// После расчета хода можно взять следующие параметры для отладки
-			_field_height	= _tetris_ai->get_height( );
-			_field_holes	= _tetris_ai->get_holes_count( );
-			_ai_alg_name	= _tetris_ai->get_ai_alg_name( );
-			_ai_calc_time	= _tetris_ai->get_ai_calc_time( );
 			_figure_counter++;
 		}
 
@@ -246,7 +235,7 @@ void application::_render( void ) {
 
 	// Render count of holes
 	buf_str.clear( );
-	buf_str += "holes: " + std::to_string( _field_holes );
+	buf_str += "holes: " + std::to_string( _ai_debug_data.holes_count );
 	_render_text( sf::Vector2f( 120.0f, 249.0f ), buf_str );
 
 	// Render figure counter
@@ -258,17 +247,14 @@ void application::_render( void ) {
 	_render_text( sf::Vector2f( 78.0f, 285.0f ), "height:" );
 	buf_str.clear( );
 	_sf_text->setPosition( sf::Vector2f( 0.0f, 300.0f ) );
-	if ( _field_height ) {
-		if ( _field_height->data.size( ) ) {
-			for ( unsigned i = 0; i < _field_height->data.size( ); i++ )
-				buf_str += std::to_string( _field_height->data.at( i ) ) + ",";
-			if ( buf_str.size( ) )
-				buf_str.erase( buf_str.size( ) - 1 );
-			_sf_text->setString( buf_str );
-		} else
-			_sf_text->setString( "height is empty" );
+	if ( _ai_debug_data.height.data.size( ) ) {
+		for ( unsigned i = 0; i < _ai_debug_data.height.data.size( ); i++ )
+			buf_str += std::to_string( _ai_debug_data.height.data.at( i ) ) + ",";
+		if ( buf_str.size( ) )
+			buf_str.erase( buf_str.size( ) - 1 );
+		_sf_text->setString( buf_str );
 	} else
-		_sf_text->setString( "no height received" );
+		_sf_text->setString( "height is empty" );
 	_sf_render_window->draw( *_sf_text );
 
 	// Render move variant
@@ -278,7 +264,7 @@ void application::_render( void ) {
 
 	buf_str.clear( );
 	buf_str += "pos: ";
-	if ( _field_height )	// Если высота получена, значит и _move_variant заполнен
+	if ( _ai_debug_data.height.data.size( ) )	// Если высота получена, значит и _move_variant заполнен
 		buf_str += std::to_string( _move_variant.position );
 	else
 		buf_str += "n/a";
@@ -286,7 +272,7 @@ void application::_render( void ) {
 
 	buf_str.clear( );
 	buf_str += "rot: ";
-	if ( _field_height )	// Если высота получена, значит и _move_variant заполнен
+	if ( _ai_debug_data.height.data.size( ) )	// Если высота получена, значит и _move_variant заполнен
 		buf_str += std::to_string( _move_variant.rotation );
 	else
 		buf_str += "n/a";
@@ -300,8 +286,8 @@ void application::_render( void ) {
 	// Render AI algorithm name
 	buf_str.clear( );
 	buf_str = "ai: ";
-	if ( _ai_alg_name )
-		buf_str += *_ai_alg_name;
+	if ( _ai_debug_data.alg_name.size( ) )
+		buf_str += _ai_debug_data.alg_name;
 	else
 		buf_str += "n/a";
 	_render_text( sf::Vector2f( 10.0f, 360.0f ), buf_str );
@@ -309,10 +295,7 @@ void application::_render( void ) {
 	// Render AI calculation time
 	buf_str.clear( );
 	buf_str = "calc time: ";
-	if ( _ai_calc_time )
-		buf_str += std::to_string( ( double )_ai_calc_time->count( ) ) + " ms";
-	else
-		buf_str += "n/a";
+	buf_str += std::to_string( _ai_debug_data.calc_time.count( ) ) + " ms";
 	_render_text( sf::Vector2f( 10.0f, 375.0f ), buf_str );
 
 	// double buff

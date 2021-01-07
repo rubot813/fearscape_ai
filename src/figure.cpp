@@ -178,14 +178,14 @@ bool figure_c::is_can_place( cell_field_c *cell_field, sf::Vector2i position ) {
 					sf::Vector2i pos = sf::Vector2i( x + position.x, y + position.y );
 					bool field_check = 0;
 					if ( cell_field->check( pos, &field_check ) ) {
-						// Ячейка существует и занята = выход из цикла
+						// Ячейка существует и занята = выход из цикла for по y
 						if ( field_check ) {
 							ok_flag = 0;
 							break;
 						}
 					}	// field check
 				}	// figure check
-			}	// figure check
+			} // figure check
 		}	// for y
 		if ( !ok_flag )
 			break;
@@ -199,14 +199,17 @@ bool figure_c::place_to_cellfield( cell_field_c *cell_field, int8_t hor_position
 	// Сохраняю поле ячеек
 	cell_field_c cf_buffer = *cell_field;
 
-	// Проход по полю снизу вверх
-	for ( uint8_t y = field_size_y_c - 1; y >= 0; y-- ) {
-		// Если можем расположить фигуру в данном месте
-		if ( is_can_place( cell_field, sf::Vector2i( hor_position, y ) ) )
+	// Проход по полю сверху вниз
+	for ( uint8_t y = 1; y < field_size_y_c + 4; y++ ) {
+		// Если не можем расположить фигуру в данном месте
+		if ( !is_can_place( cell_field, sf::Vector2i( hor_position, y ) ) ) {
 			if ( apply_to_cellfield( cell_field,  sf::Vector2i( hor_position, y - 1 ) ) ) {
 				ok_flag = 1;
 				break;
-			}
+			} /*else
+				std::cout << "Exit 0\n";*/
+		} /*else
+			std::cout << "Exit 1\n";*/
 		// else field is full
 	}	// for
 

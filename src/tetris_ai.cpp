@@ -1,49 +1,25 @@
 #include "tetris_ai.hpp"
 
 tetris_ai_c::tetris_ai_c( void ) {
-	_height.data.clear( );
-	srand( static_cast< std::size_t >( time( NULL ) ) );
+	srand( static_cast< std::size_t >( time( NULL ) ) );	// ai_random
 }
 
 tetris_ai_c::~tetris_ai_c( void ) {
 	// np
 }
 
-tetris_ai_c::height_s* tetris_ai_c::get_height( void ) {
-	return &_height;
-}
-
-std::size_t	tetris_ai_c::get_height_sum( void ) {
-	std::size_t value = 0;
-	auto iter = _height.data.begin( );
-	while( iter != _height.data.end( ) ) {
-		value += *iter;
-		iter++;
-	}
-	return value;
-}
-
-uint8_t	tetris_ai_c::get_holes_count( void ) {
-	return _holes;
-}
-
-std::string* tetris_ai_c::get_ai_alg_name( void ) {
-	return &_ai_alg_name;
-}
-
-std::chrono::milliseconds* tetris_ai_c::get_ai_calc_time( void ) {
-	return &_calc_time;
-}
-
-tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_simple_placer( cell_field_c *cell_field, figure_c *figure ) {
+tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_simple_placer( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug ) {
 
 	auto start_time = std::chrono::steady_clock::now( );
 
 	// Расчет высот столбцов поля
-	_height = _calculate_height( cell_field );
+	debug->height = _calculate_height( cell_field );
+
+	// Расчет суммы высот
+	debug->height_sum = _calculate_height_sum( &debug->height );
 
 	// Расчет количества отверстий
-	_holes = _calculate_holes( cell_field );
+	debug->holes_count = _calculate_holes( cell_field );
 
 	// Итоговый вариант хода
 	move_variant_s move_variant;
@@ -53,21 +29,24 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_simple_placer( cell_field_c *cel
 	move_variant.rotation = figure_c::rt_standart;
 	// = = = = =
 
-	_ai_alg_name = __FUNCTION__;
+	debug->alg_name = __FUNCTION__;
 	auto end_time = std::chrono::steady_clock::now( );
-	_calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
+	debug->calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
 	return move_variant;
 }
 
-tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_random( cell_field_c *cell_field, figure_c *figure ) {
+tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_random( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug ) {
 
 	auto start_time = std::chrono::steady_clock::now( );
 
 	// Расчет высот столбцов поля
-	_height = _calculate_height( cell_field );
+	debug->height = _calculate_height( cell_field );
+
+	// Расчет суммы высот
+	debug->height_sum = _calculate_height_sum( &debug->height );
 
 	// Расчет количества отверстий
-	_holes = _calculate_holes( cell_field );
+	debug->holes_count = _calculate_holes( cell_field );
 
 	// Итоговый вариант хода
 	move_variant_s move_variant;
@@ -77,40 +56,36 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_random( cell_field_c *cell_field
 	move_variant.rotation = static_cast< figure_c::rotation_e >( rand( ) % 3 );	// 0 .. 3
 	// = = = = =
 
-	_ai_alg_name = __FUNCTION__;
+	debug->alg_name = __FUNCTION__;
 	auto end_time = std::chrono::steady_clock::now( );
-	_calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
+	debug->calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
 	return move_variant;
 }
 
-tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_field, figure_c *figure ) {
+tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug ) {
 
 	auto start_time = std::chrono::steady_clock::now( );
 
-	// Структура, содержая вариант хода и вес соответствующего варианта хода
-	// Будет совершен ход с наибольшим весом
-	struct weight_var_s {
-		float weight;
-		tetris_ai_c::move_variant_s move_var;
-	};
-
-	// Контейнер с вариантами ходов и их весами
-	std::vector< weight_var_s > weight_var_cont;
+	// Контейнер очков
+	std::vector< _score_s > scores;
 
 	// Расчет высот столбцов поля
-	_height = _calculate_height( cell_field );
+	debug->height = _calculate_height( cell_field );
+
+	// Расчет суммы высот
+	debug->height_sum = _calculate_height_sum( &debug->height );
 
 	// Расчет количества отверстий
-	_holes = _calculate_holes( cell_field );
+	debug->holes_count = _calculate_holes( cell_field );
 
 	// Копия фигуры
 	figure_c fg = *figure;
 
 	// Цикл по вращениям фигуры
-	for ( uint8_t rot = 0; rot < 4; rot++ ) {
+	for ( uint8_t rt = 0; rt < 4; rt++ ) {
 
 		// Установка поворота фигуры
-		fg.set_rotation( static_cast< figure_c::rotation_e >( rot ) );
+		fg.set_rotation( static_cast< figure_c::rotation_e >( rt ) );
 
 		// Получение проекции фигуры
 		figure_c::projection_s f_projection = fg.get_horizontal_projection( );
@@ -146,43 +121,55 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm_noholes( cell_field_c *cell_f
 				// Количество линий
 				uint8_t li = _calculate_lines( &cf );
 
-				// Вариант хода с весом
-				weight_var_s weight_var;
+				// Количество очков
+				_score_s current_score;
 
-				// Формула расчета веса варианта положения фигуры
-				weight_var.weight = -ho;	//li * 2.0f - hs * 1.0f - ho * 0.8f;
+				// Формула расчета очков хода
+				current_score.score	= -ho;
 
 				// Заполнение хода
-				weight_var.move_var.position = hor_pos - 3;
-				weight_var.move_var.rotation = static_cast< figure_c::rotation_e >( rot );
+				current_score.move_variant.position = hor_pos - 3;
+				current_score.move_variant.rotation = static_cast< figure_c::rotation_e >( rt );
+				*current_score.cf = cf;
 
 				// Добавление хода с его весом в контейнер
-				weight_var_cont.push_back( weight_var );
+				scores.push_back( current_score );
 
 			} else
 				std::cout << __FUNCTION__ << " -> error, cannot place figure\n";
 		}	// for horizontal position
 	}	// for rotation
 
-	std::cout << "Variants = " << weight_var_cont.size( ) << "\n";
+	std::cout << __FUNCTION__ << " move variants = " << scores.size( ) << "\n";
 
 	// Сортировка контейнера по наибольшему весу
-	std::sort( weight_var_cont.begin( ), weight_var_cont.end( ),
-			[ ]( const weight_var_s &wv_0, const weight_var_s &wv_1 ) {
-				return ( wv_0.weight > wv_1.weight );
+	std::sort( scores.begin( ), scores.end( ),
+			[ ]( const _score_s &s0, const _score_s &s1 ) {
+				return ( s0.score > s1.score );
 			} );
 
-	_ai_alg_name = __FUNCTION__;
+	debug->alg_name = __FUNCTION__;
 	auto end_time = std::chrono::steady_clock::now( );
-	_calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
+	debug->calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
 
 	// Пока костыль
 	move_variant_s var;
-	if ( !weight_var_cont.size( ) ) {
+	if ( !scores.size( ) ) {
 		return var;
-	} else
+	} else {
+		cell_field_c *cf = scores.front( ).cf;
+		sf::Vector2i cf_size = cf->get_size( );
+		std::cout << "Best move:\n";
+		for ( uint8_t y = 0; y < cf_size.y; y++ ) {
+			for ( uint8_t x = 0; x < cf_size.x; x++ ) {
+				std::cout << cf->get( sf::Vector2i( x, y ) ) << " ";
+			}
+			std::cout << "\n";
+		}
+
 		// Возврат наилучшего результата хода
-		return weight_var_cont.front( ).move_var;
+		return scores.front( ).move_variant;
+	}
 }
 
 tetris_ai_c::height_s tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
