@@ -35,7 +35,6 @@ application::~application( void ) {
 	delete _sf_rect_shape;
 	delete _sf_event;
 	delete _sf_render_window;
-	delete _online_tetris_settings;
 	delete _pf;
 	delete _cf;
 	delete _current_figure_cf;
@@ -50,31 +49,24 @@ bool application::_init( void ) {
 	// Флаг успешной инициализации
 	bool ok_flag = 1;
 
-	// Поиск окна приложения с тетрисом по имени
-	std::ifstream *file = new std::ifstream;
-	std::string app_name = "default";
-	file->open( "config.txt", std::ios::in );
-	if ( file->is_open( ) )
-		std::getline( *file, app_name );
-	else {
-		std::cout << "Cannot found config.txt";
-		ok_flag = 0;
+	// Чтение конфигов
+	if ( !config_reader_c::get_instance( )->read( ) ) {
+		std::cout << __FUNCTION__ << " -> cannot open config files!\n";
+		return 0;
 	}
-	file->close( );
-	delete file;
 
 	std::cout << "Searching for application..." << "\n";
 	// Поиск окна по имени
 	_window_hwnd = NULL;
 	while( !_window_hwnd )
-		_window_hwnd = FindWindow( 0, app_name.c_str( ) );	// from global
+		_window_hwnd = FindWindow( 0, config->window_name.c_str( ) );	// from global
 	std::cout << "Application found!\n";
 
 	// Разворачивание окна на передний план
 	SetForegroundWindow( _window_hwnd );
 
 	// Создание и запуск класса эмуляции нажатия на кнопки
-	_keypress_emulator = new keypress_emulator_c( std::chrono::milliseconds( key_press_timeout_msec ), _window_hwnd );
+	_keypress_emulator = new keypress_emulator_c( std::chrono::milliseconds( config->kp_time ), _window_hwnd );
 
 	// SFML
 	_sf_font		= new sf::Font;
@@ -90,47 +82,22 @@ bool application::_init( void ) {
 		ok_flag = 0;
 
 	// Создание своего окна
-	_sf_render_window = new sf::RenderWindow( sf::VideoMode( window_size_x, window_size_y ), "Fearscape AI", sf::Style::Titlebar | sf::Style::Close );
+	unsigned win_size_x = 215;
+	unsigned win_size_y = 400;
+	_sf_render_window = new sf::RenderWindow( sf::VideoMode( win_size_x, win_size_y ), "Fearscape AI gen 1", sf::Style::Titlebar | sf::Style::Close );
 	_sf_render_window->setFramerateLimit( 60 );
 
-	// Цвета блоков
-	_online_tetris_settings = new cell_field_c::settings_s;
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 192, 19, 2 ) } );	// light red
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 217, 71, 30 ) } );	// red
-
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 145, 2, 172 ) } );	// purple
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 176, 36, 195 ) } );
-
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 0, 223, 223 ) } );	// light blue
-
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 238, 129, 0 ) } );	// orangle
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 248, 174, 1 ) } );
-
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 0, 0, 205 ) } );	// blue
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 0, 124, 204 ) } );
-
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 39, 144, 0 ) } );	// green
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 86, 164, 0 ) } );
-
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 249, 236, 35 ) } );	// yellow
-	_online_tetris_settings->used_cells.push_back( { sf::Color( 251, 191, 32 ) } );
-
-	// Цвета фона
-	_online_tetris_settings->free_cells.push_back( { sf::Color( 255, 255, 255 ) } );// background
-	_online_tetris_settings->free_cells.push_back( { sf::Color( 223, 223, 223 ) } );// shadow
-
-	_online_tetris_settings->free_cells.push_back( { sf::Color( 235, 234, 240 ) } );
-	_online_tetris_settings->free_cells.push_back( { sf::Color( 235, 234, 239 ) } );
+	// Цвет фона
 
 	// Инициализация внутренних классов
-	_pf = new pixel_field_c( sf::Vector2i( field_size_x_c, field_size_y_c ) );
-	_cf = new cell_field_c( sf::Vector2i( field_size_x_c, field_size_y_c ) );
+	_pf = new pixel_field_c( sf::Vector2i( config->field_size.x, config->field_size.y ) );
+	_cf = new cell_field_c( sf::Vector2i( config->field_size.x, config->field_size.y ) );
 
-	_current_figure_pf = new pixel_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
-	_current_figure_cf = new cell_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
+	_current_figure_pf = new pixel_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
+	_current_figure_cf = new cell_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
 
-	_previous_figure_pf = new pixel_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
-	_previous_figure_cf = new cell_field_c( sf::Vector2i( figure_size_x_c, figure_size_x_c ) );
+	_previous_figure_pf = new pixel_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
+	_previous_figure_cf = new cell_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
 
 	// Оставляю в _previous_figure_pf мусор, чтобы не срабатывало сравнение
 	_previous_figure_pf->set( sf::Vector2i( 0, 0 ), sf::Color::Blue );
@@ -146,25 +113,25 @@ void application::_logic( void ) {
 
 	// Взятие игрового поля с экрана и конвертирование в поле ячеек с игнорированием двух линий сверху
 	// ====
-	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( screen_start_field_x, screen_start_field_y ),
-	                               sf::Vector2i( screen_block_size, screen_block_size ) );
-	_pf->convert_to_cellfield( _cf, _online_tetris_settings, 2 );	// bool
+	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( config->screen_start_field.x, config->screen_start_field.y ),
+	                               sf::Vector2i( config->screen_figure_size, config->screen_figure_size ) );
+	_pf->convert_to_cellfield( _cf, 2 );	// bool
 	// ====
 
 
 	// Взятие поля следующей фигуры с экрана
 	// ====
-	_fill_pixel_field_from_screen( _current_figure_pf,	sf::Vector2i( screen_start_figure_x, screen_start_figure_y ),
-	                               sf::Vector2i( screen_block_size, screen_block_size ) );
+	_fill_pixel_field_from_screen( _current_figure_pf,	sf::Vector2i( config->screen_start_figure.x, config->screen_start_figure.y ),
+	                               sf::Vector2i( config->screen_figure_size, config->screen_figure_size ) );
 
 	// Если изменилась следующая фигура, значит нужно делать ход по предыдущей
 	if ( *_current_figure_pf != *_previous_figure_pf ) {
 
 		// Получение поля ячеек
-		_previous_figure_pf->convert_to_cellfield( _previous_figure_cf, _online_tetris_settings );	// bool
+		_previous_figure_pf->convert_to_cellfield( _previous_figure_cf );	// bool
 
 		// Если фигура успешно определена по полю ячеек
-		if ( _figure->set_from_cell_field( _previous_figure_cf, _online_tetris_settings ) ) {
+		if ( _figure->set_from_cell_field( _previous_figure_cf ) ) {
 
 			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
 			_move_variant	= _tetris_ai->ai_alg_bm( _cf, _figure, &_ai_debug_data );
@@ -188,8 +155,8 @@ void application::_render( void ) {
 	// Render pixel field
 	_render_text( sf::Vector2f( 0.0f, 0.0f ), "raw pix field:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
-	for ( unsigned x = 0; x < field_size_x_c; x++ )
-		for ( unsigned y = 0; y < field_size_y_c; y++ ) {
+	for ( int x = 0; x < config->field_size.x; x++ )
+		for ( int y = 0; y < config->field_size.y; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 5.0f, y * 10.0f + 15.0f ) );
 			_sf_rect_shape->setFillColor( _pf->get( sf::Vector2i( x, y ) ) );
 			_sf_render_window->draw( *_sf_rect_shape );
@@ -198,8 +165,8 @@ void application::_render( void ) {
 	// Render cell field
 	_render_text( sf::Vector2f( 118.0f, 0.0f ), "cell field:" );
 	uint8_t color_id;
-	for ( unsigned x = 0; x < field_size_x_c; x++ )
-		for ( unsigned y = 0; y < field_size_y_c; y++ ) {
+	for ( int x = 0; x < config->field_size.x; x++ )
+		for ( int y = 0; y < config->field_size.y; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 110.0f, y * 10.0f + 15.0f ) );
 			if ( _cf->get( sf::Vector2i( x, y ) ) )
 				color_id = 245;
@@ -217,8 +184,8 @@ void application::_render( void ) {
 	// Render previous figure
 	_render_text( sf::Vector2f( 9.0f, 225.0f ), "prev figure:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
-	for ( unsigned x = 0; x < figure_size_x_c; x++ )
-		for ( unsigned y = 0; y < figure_size_y_c; y++ ) {
+	for ( int x = 0; x < config->figure_cell_size.x; x++ )
+		for ( int y = 0; y < config->figure_cell_size.y; y++ ) {
 			_sf_rect_shape->setPosition( sf::Vector2f( x * 10.0f + 35.0f, y * 10.0f + 245.0f ) );
 			_sf_rect_shape->setFillColor( _previous_figure_pf->get( sf::Vector2i( x, y ) ) );
 			_sf_render_window->draw( *_sf_rect_shape );
@@ -226,11 +193,11 @@ void application::_render( void ) {
 
 	// Render field size
 	buf_str.clear( );
-	buf_str += "x size: " + std::to_string( field_size_x_c );
+	buf_str += "x size: " + std::to_string( config->field_size.x );
 	_render_text( sf::Vector2f( 120.0f, 225.0f ), buf_str );
 
 	buf_str.clear( );
-	buf_str += "y size: " + std::to_string( field_size_y_c );
+	buf_str += "y size: " + std::to_string( config->field_size.y );
 	_render_text( sf::Vector2f( 120.0f, 237.0f ), buf_str );
 
 	// Render count of holes

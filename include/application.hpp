@@ -7,6 +7,7 @@
 #include <fstream>
 
 #include "keypress_emulator.hpp"
+#include "config_reader.hpp"
 #include "pixel_field.hpp"
 #include "tetris_ai.hpp"
 #include "figure.hpp"
@@ -45,19 +46,19 @@ class application {
 		sf::Text			*_sf_text;
 
 		// Дескриптор окна, сам является указателем
-		HWND				_window_hwnd;
+		HWND							_window_hwnd;
 
 		// Указатель на экземпляр класса ИИ
-		tetris_ai_c				*_tetris_ai;
+		tetris_ai_c						*_tetris_ai;
 
 		// Отладочная информация tetris_ai
 		tetris_ai_c::ai_debug_data_s	_ai_debug_data;
 
 		// Счетчик фигур
-		std::size_t				_figure_counter;
+		std::size_t						_figure_counter;
 
 		// Вариант перемещения фигуры
-		tetris_ai_c::move_variant_s _move_variant;
+		tetris_ai_c::move_variant_s 	_move_variant;
 
 		// Переменные поля
 		// обновляются каждую итерацию
@@ -77,9 +78,6 @@ class application {
 
 		// Указатель на класс эмуляции нажатия кнопок
 		keypress_emulator_c	*_keypress_emulator;
-
-		// Настроки цветов для online-tetris.ru
-		cell_field_c::settings_s 		*_online_tetris_settings;
 };
 
 #endif // APPLICATION_HPP

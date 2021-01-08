@@ -80,7 +80,7 @@ class tetris_ai_c {
 			// = = = =
 			cell_field_c *cf;
 			_score_s( void ) {
-				cf = new cell_field_c( sf::Vector2i( field_size_x_c, field_size_y_c ) );
+				cf = new cell_field_c( sf::Vector2i( config->field_size.x, config->field_size.y ) );
 			}
 			// = = = =
 		};

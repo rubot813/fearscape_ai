@@ -66,7 +66,7 @@ class figure_c {
 		// Метод определения типа фигуры из cell_field ( только с вращением rt_standart )
 		// Размер поля должен быть 4x4
 		// Вернет true если тип определен, иначе false ( тип unknown )
-		bool set_from_cell_field( cell_field_c *cell_field, cell_field_c::settings_s *settings );
+		bool set_from_cell_field( cell_field_c *cell_field );
 
 		// Метод возвращает поле ячеек 4x4 для фигуры ( с учетом вращения )
 		// Если тип фигуры unknown, вернет пустое поле

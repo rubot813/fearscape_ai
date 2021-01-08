@@ -1,11 +1,13 @@
 #ifndef CELL_FIELD_HPP
 #define CELL_FIELD_HPP
 
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <stdint.h>
 #include <iostream>
 #include <vector>
 
-#include "global.hpp"
+#include "config_reader.hpp"
 
 // Класс описывающий поле ячеек ( bool зан¤та / свободна )
 class cell_field_c {
@@ -36,11 +38,11 @@ class cell_field_c {
 
 		// Метод получения значения ячейки
 		// Если значение pos задано неверно и ячейка не существует, вернет false
-		cell_t get( sf::Vector2i pos );
+		bool get( sf::Vector2i pos );
 
 		// Методы установки значения ячейки
-		bool set( sf::Vector2i pos, cell_t val );
-		bool set( uint8_t id, cell_t val );
+		bool set( sf::Vector2i pos, bool val );
+		bool set( uint8_t id, bool val );
 
 		// Метод получения значения ячейки с проверкой ее наличия
 		// Возвращает существование ячейки, в value = значение, если она существует
@@ -53,7 +55,7 @@ class cell_field_c {
 	private:
 
 		// Поле = вектор
-		std::vector< cell_t > _field;
+		std::vector< bool > _field;
 
 		// Пазмеры поля
 		sf::Vector2i _field_size;
