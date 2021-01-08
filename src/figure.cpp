@@ -40,7 +40,7 @@ figure_c::rotation_e figure_c::get_rotation( void ) {
 	return _rotation;
 }
 
-bool figure_c::set_from_cell_field( cell_field_c *cell_field, cell_field_c::settings_s *settings ) {
+bool figure_c::set_from_cell_field( cell_field_c *cell_field ) {
 	if ( !cell_field ) {
 		std::cout << __FUNCTION__ << " -> null error\n";
 		return 0;
@@ -57,7 +57,7 @@ bool figure_c::set_from_cell_field( cell_field_c *cell_field, cell_field_c::sett
 	_type = figure_c::unknown;
 	_rotation = figure_c::rt_standart;
 	if ( cell_field->convert_to_16bit( &bit_figure ) ) {
-		for ( uint8_t i = 0; i < figure_count; i++ )
+		for ( uint8_t i = 0; i < config->figure_count; i++ )
 			if ( bit_figure == _cf_bitfield_rotation[ i ][ 0 ] ) {
 				_type = static_cast< type_e >( i );
 				break;
@@ -68,10 +68,10 @@ bool figure_c::set_from_cell_field( cell_field_c *cell_field, cell_field_c::sett
 }
 
 cell_field_c figure_c::get_cellfield( void ) {
-	cell_field_c cell_field( sf::Vector2i( figure_size_x_c, figure_size_y_c ) );	// 4x4 by default
+	cell_field_c cell_field( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );	// 4x4 by default
 	uint16_t bitfield = get_bitfield( );
 	if ( bitfield ) {
-		for ( unsigned id = 0; id < ( figure_size_x_c * figure_size_y_c ); id++ )
+		for ( int id = 0; id < ( config->figure_cell_size.x * config->figure_cell_size.y ); id++ )
 			cell_field.set( id, ( ( bitfield ) & ( 1 << id ) ) );
 	} else
 		std::cout << __FUNCTION__ << " -> error\n";
@@ -81,7 +81,7 @@ cell_field_c figure_c::get_cellfield( void ) {
 uint16_t figure_c::get_bitfield( void ) {
 	uint16_t ret = 0;
 	if (	_type >= 0 &&
-	        _type <= figure_count ) {
+	        _type <= config->figure_count ) {
 		ret = _cf_bitfield_rotation[ _type ][ _rotation ];
 	} else
 		std::cout << __FUNCTION__ << " -> error\n";
@@ -93,22 +93,20 @@ figure_c::projection_s figure_c::get_horizontal_projection( void ) {
 	projection_s proj;
 	proj.valid = 0;
 	bool buffer_value;
-	if ( cf.get_count( ) == ( figure_size_x_c * figure_size_y_c ) ) {
-		proj.valid = 1;
-		for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
-			buffer_value = 0;
-			for ( uint8_t y = figure_size_y_c - 1; y > 0; y-- ) {
-				bool value = 0;
-				if ( cf.check( sf::Vector2i( x, y ), &value ) ) {
-					if ( value ) {
-						buffer_value = 1;
-						break;
-					}
-				}	// if check
-			}	// for y
-			proj.data.push_back( buffer_value );
-		}	// for x
-	}	// if
+	proj.valid = 1;
+	for ( int x = 0; x < config->figure_cell_size.x; x++ ) {
+		buffer_value = 0;
+		for ( int y = config->figure_cell_size.y - 1; y >= 0; y-- ) {
+			bool value = 0;
+			if ( cf.check( sf::Vector2i( x, y ), &value ) ) {
+				if ( value ) {
+					buffer_value = 1;
+					break;
+				}
+			}	// if check
+		}	// for y
+		proj.data.push_back( buffer_value );
+	}	// for x
 	return  proj;
 }
 
@@ -116,22 +114,20 @@ figure_c::projection_s figure_c::get_horizontal_projection( cell_field_c *cell_f
 	projection_s proj;
 	proj.valid = 0;
 	bool buffer_value;
-	if ( cell_field->get_count( ) == ( figure_size_x_c * figure_size_y_c ) ) {
-		proj.valid = 1;
-		for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
-			buffer_value = 0;
-			for ( uint8_t y = figure_size_y_c - 1; y > 0; y-- ) {
-				bool value = 0;
-				if ( cell_field->check( sf::Vector2i( x, y ), &value ) ) {
-					if ( value ) {
-						buffer_value = 1;
-						break;
-					}
-				}	// if check
-			}	// for y
-			proj.data.push_back( buffer_value );
-		}	// for x
-	}	// if
+	proj.valid = 1;
+	for ( int x = 0; x < config->figure_cell_size.x; x++ ) {
+		buffer_value = 0;
+		for ( int y = config->figure_cell_size.y - 1; y >= 0; y-- ) {
+			bool value = 0;
+			if ( cell_field->check( sf::Vector2i( x, y ), &value ) ) {
+				if ( value ) {
+					buffer_value = 1;
+					break;
+				}
+			}	// if check
+		}	// for y
+		proj.data.push_back( buffer_value );
+	}	// for x
 	return  proj;
 }
 
@@ -166,8 +162,8 @@ bool figure_c::is_can_place( cell_field_c *cell_field, sf::Vector2i position ) {
 	cell_field_c figure_cf = get_cellfield( );	// Поле фигуры
 
 	// Проход по полю фигуры
-	for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
-		for ( uint8_t y = 0; y < figure_size_y_c; y++ ) {
+	for ( uint8_t x = 0; x < config->figure_cell_size.x; x++ ) {
+		for ( uint8_t y = 0; y < config->figure_cell_size.y; y++ ) {
 			// Проверка, занята ли ячейка фигуры
 			bool figure_value = 0;
 			if ( figure_cf.check( sf::Vector2i( x, y ), &figure_value ) ) {
@@ -204,7 +200,7 @@ bool figure_c::place_to_cellfield( cell_field_c *cell_field, int8_t hor_position
 	cell_field_c cf_buffer = *cell_field;
 
 	// Проход по полю сверху вниз
-	for ( uint8_t y = 1; y < field_size_y_c + 2; y++ ) {
+	for ( uint8_t y = 1; y < config->field_size.y + 2; y++ ) {
 		// Если не можем расположить фигуру в данном месте
 		if ( !is_can_place( cell_field, sf::Vector2i( hor_position, y ) ) ) {
 			// std::cout << "Cannot place on " << ( signed )hor_position << ", " << ( unsigned )y << "( try to apply to " << ( unsigned )y - 1 << "\n";
@@ -223,8 +219,8 @@ bool figure_c::apply_to_cellfield( cell_field_c *cell_field, sf::Vector2i positi
 	cell_field_c figure_cf = get_cellfield( );	// Поле фигуры
 
 	// Проход по полю фигуры
-	for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
-		for ( uint8_t y = 0; y < figure_size_y_c; y++ ) {
+	for ( uint8_t x = 0; x < config->figure_cell_size.x; x++ ) {
+		for ( uint8_t y = 0; y < config->figure_cell_size.y; y++ ) {
 			// Если ячейка фигуры заполнена
 			if ( figure_cf.get( sf::Vector2i( x, y ) ) ) {
 

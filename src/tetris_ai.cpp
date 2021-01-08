@@ -87,7 +87,6 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm( cell_field_c *cell_field, fi
 	const double ai_alg_bm_weight_bp	= -0.184483;
 	// = = = = =
 
-
 	// Контейнер очков
 	std::vector< _score_s > *scores;
 	scores = new std::vector< _score_s >;
@@ -133,7 +132,7 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm( cell_field_c *cell_field, fi
 
 		// Цикл по всем вариантам постановки фигуры с данным вращением
 		int8_t max_left_pos		= -left_offset;
-		int8_t max_right_pos	= field_size_x_c - figure_size_x_c + right_offset ;
+		int8_t max_right_pos	= config->field_size.x - config->figure_cell_size.x + right_offset ;
 		//std::cout << "hor pos = " << -( signed )max_left_pos << " to " << ( signed )max_right_pos << "\n";
 		for ( int8_t hor_pos = max_left_pos; hor_pos <= max_right_pos; hor_pos++ ) {
 
@@ -165,9 +164,9 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm( cell_field_c *cell_field, fi
 
 				// Формула расчета очков хода
 				current_score.score	=	ai_alg_bm_weight_he * hs +
-										ai_alg_bm_weight_li * li +
-										ai_alg_bm_weight_ho * ho +
-										ai_alg_bm_weight_bp * bp;
+				                        ai_alg_bm_weight_li * li +
+				                        ai_alg_bm_weight_ho * ho +
+				                        ai_alg_bm_weight_bp * bp;
 
 				// Заполнение хода
 				current_score.move_variant.position = hor_pos - ai_alg_bm_set_c_hp_o;
@@ -177,8 +176,8 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm( cell_field_c *cell_field, fi
 				// Добавление хода с его весом в контейнер
 				scores->push_back( current_score );
 
-			} // else
-				// std::cout << __FUNCTION__ << " -> error, cannot place figure\n";
+			} else
+				std::cout << __FUNCTION__ << " -> error, no moves for figure " << fg.get_type_char( ) << "\n";
 		}	// for horizontal position
 	}	// for rotation
 
@@ -186,16 +185,15 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm( cell_field_c *cell_field, fi
 
 	// Сортировка контейнера по наибольшему весу
 	std::sort( scores->begin( ), scores->end( ),
-			[ ]( const _score_s &s0, const _score_s &s1 ) {
-				return ( s0.score > s1.score );
-			} );
+	[ ]( const _score_s & s0, const _score_s & s1 ) {
+		return ( s0.score > s1.score );
+	} );
 
 	debug->alg_name = __FUNCTION__;
 	auto end_time = std::chrono::steady_clock::now( );
 	debug->calc_time = std::chrono::duration_cast< std::chrono::milliseconds >( end_time - start_time );
 
-	// Если есть хотя бы один доступный ход
-	if ( scores->size( ) ) {
+
 	/*	cell_field_c *cf = scores->front( ).cf;
 		sf::Vector2i cf_size = cf->get_size( );
 		std::cout << "Best move:\n";
@@ -206,10 +204,8 @@ tetris_ai_c::move_variant_s tetris_ai_c::ai_alg_bm( cell_field_c *cell_field, fi
 			std::cout << "\n";
 		}*/
 
-		// Возврат наилучшего результата хода
-		return scores->front( ).move_variant;
-	} else
-		return move_variant_s( );
+	// Возврат наилучшего варианта хода
+	return scores->front( ).move_variant;
 }
 
 tetris_ai_c::height_s tetris_ai_c::_calculate_height( cell_field_c *cell_field ) {
