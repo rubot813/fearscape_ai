@@ -37,9 +37,7 @@ application::~application( void ) {
 	delete _sf_render_window;
 	delete _pf;
 	delete _cf;
-	delete _current_figure_cf;
 	delete _current_figure_pf;
-	delete _previous_figure_cf;
 	delete _previous_figure_pf;
 	delete _tetris_ai;
 	delete _keypress_emulator;
@@ -84,7 +82,7 @@ bool application::_init( void ) {
 	// Создание своего окна
 	unsigned win_size_x = 215;
 	unsigned win_size_y = 400;
-	_sf_render_window = new sf::RenderWindow( sf::VideoMode( win_size_x, win_size_y ), "Fearscape AI gen 1", sf::Style::Titlebar | sf::Style::Close );
+	_sf_render_window = new sf::RenderWindow( sf::VideoMode( win_size_x, win_size_y ), "Fearscape AI gen 2", sf::Style::Titlebar | sf::Style::Close );
 	_sf_render_window->setFramerateLimit( 15 );
 
 	// Цвет фона
@@ -94,10 +92,7 @@ bool application::_init( void ) {
 	_cf = new cell_field_c( sf::Vector2i( config->field_size.x, config->field_size.y ) );
 
 	_current_figure_pf = new pixel_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
-	_current_figure_cf = new cell_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
-
 	_previous_figure_pf = new pixel_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
-	_previous_figure_cf = new cell_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
 
 	// Оставляю в _previous_figure_pf мусор, чтобы не срабатывало сравнение
 	_previous_figure_pf->set( sf::Vector2i( 0, 0 ), sf::Color::Blue );
@@ -123,20 +118,17 @@ void application::_logic( void ) {
 	_fill_pixel_field_from_screen( _current_figure_pf,	sf::Vector2i( config->screen_start_figure.x, config->screen_start_figure.y ),
 	                               sf::Vector2i( config->screen_figure_size, config->screen_figure_size ) );
 
-	// Если изменилась следующая фигура и успешно конвертировали поле,
-	//  значит нужно делать ход по предыдущей
-	if ( *_current_figure_pf != *_previous_figure_pf && field_convert ) {
-
-		// Получение поля ячеек
-		_previous_figure_pf->convert_to_cellfield( _previous_figure_cf );	// bool
+	// Если сходили фигурой и успешно конвертировали поле, значит нужно делать ход по предыдущей фигуре
+	if ( !_keypress_emulator->get_keyqueue_count( ) && field_convert ) {
 
 		// Если фигура успешно определена по полю ячеек
-		if ( _figure->set_from_cell_field( _previous_figure_cf ) ) {
+		if ( _figure->create_from_pixel_field_table( _previous_figure_pf ) ) {
 
 			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
 			_move_variant	= _tetris_ai->ai_alg_bm( _cf, _figure, &_ai_debug_data );
 
 			// Эмуляция нажатия кнопок
+			// В wwc тетрисе могут падать две фигуры подряд
 			_keypress_emulator->add_keypress_to_queue( &_move_variant );
 
 			// Счетчик скинутых фигур
@@ -178,12 +170,12 @@ void application::_render( void ) {
 		}
 
 	// Render figure value
-	buf_str = "value: ";
+	buf_str = "cur fig: ";
 	buf_str += _figure->get_type_char( );
 	_render_text( sf::Vector2f( 9.0f, 212.0f ), buf_str );
 
 	// Render previous figure
-	_render_text( sf::Vector2f( 9.0f, 225.0f ), "prev figure:" );
+	_render_text( sf::Vector2f( 9.0f, 225.0f ), "next figure:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
 	for ( int x = 0; x < config->figure_cell_size.x; x++ )
 		for ( int y = 0; y < config->figure_cell_size.y; y++ ) {

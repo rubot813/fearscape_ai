@@ -48,17 +48,19 @@ void keypress_emulator_c::_task( void ) {
 	while( 1 ) {
 		// Если есть кнопки
 		if ( _key_queue.size( ) ) {
-			// Беру код кнопки из очереди и удаляю ее
+			// Беру код кнопки из очереди
 			WPARAM key = _key_queue.front( );
-			_key_queue.pop( );
 
 			// Эмуляция нажатия и отпускания кнопок
 			SendMessage( _window_handle, WM_KEYDOWN, key, 0 );
 			std::this_thread::sleep_for( std::chrono::milliseconds( _key_press_delay ) );
 			SendMessage( _window_handle, WM_KEYUP, key, 0 );
+
+			// Удаляю кнопку из очереди
+			_key_queue.pop( );
 		}
 
 		// Задержка между эмуляцией нажатия кнопок
-		std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+		std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
 	}
 }

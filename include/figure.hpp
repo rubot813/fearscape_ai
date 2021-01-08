@@ -1,7 +1,7 @@
 #ifndef FIGURE_HPP
 #define FIGURE_HPP
 
-#include "cell_field.hpp"
+#include "pixel_field.hpp"
 
 // Класс описывающий фигуру
 class figure_c {
@@ -63,10 +63,15 @@ class figure_c {
 		void set_rotation( rotation_e rot );
 		rotation_e get_rotation( void );
 
-		// Метод определения типа фигуры из cell_field ( только с вращением rt_standart )
+		// Метод создания фигуры из cell_field ( только с вращением rt_standart )
 		// Размер поля должен быть 4x4
 		// Вернет true если тип определен, иначе false ( тип unknown )
-		bool set_from_cell_field( cell_field_c *cell_field );
+		bool create_from_cell_field( cell_field_c *cell_field );
+
+		// Метод создания фигуры по таблицы цветов из pixel_field
+		// Размер поля должен быть 4x4
+		// Вернет true если тип определен, иначе false ( тип unknown )
+		bool create_from_pixel_field_table( pixel_field_c *pixel_field );
 
 		// Метод возвращает поле ячеек 4x4 для фигуры ( с учетом вращения )
 		// Если тип фигуры unknown, вернет пустое поле
@@ -115,6 +120,10 @@ class figure_c {
 
 		// Матрица содержит битовые поля для каждой фигуры в каждом состоянии вращения
 		static const uint16_t _cf_bitfield_rotation[ 7 ][ 4 ];
+
+		// Таблица цветов для определения следующей фигуры
+		// Используется, если каждая фигура своего цвета
+		static const sf::Color _color_type_table[ 7 ];
 };
 
 #endif // FIGURE_HPP

@@ -66,14 +66,9 @@ class application {
 		cell_field_c		*_cf;		// Значения ячеек
 
 		// Переменные фигуры
-		// Текущая фигура
-		pixel_field_c		*_current_figure_pf;	// Цвета
-		cell_field_c		*_current_figure_cf;	// Значения ячеек
-
-		// Предыдущая фигура
-		pixel_field_c		*_previous_figure_pf;	// Цвета
-		cell_field_c		*_previous_figure_cf;	// Значения ячеек
-
+		// Поле цветов фигур
+		pixel_field_c		*_current_figure_pf;	// Текущая
+		pixel_field_c		*_previous_figure_pf;	// Предыдущая
 		figure_c			*_figure;		// Тип фигуры
 
 		// Указатель на класс эмуляции нажатия кнопок
