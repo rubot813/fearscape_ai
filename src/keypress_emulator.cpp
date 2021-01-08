@@ -53,7 +53,7 @@ void keypress_emulator_c::_task( void ) {
 
 			// Эмуляция нажатия и отпускания кнопок
 			SendMessage( _window_handle, WM_KEYDOWN, key, 0 );
-			std::this_thread::sleep_for( std::chrono::milliseconds( _key_press_delay ) );
+			std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
 			SendMessage( _window_handle, WM_KEYUP, key, 0 );
 
 			// Удаляю кнопку из очереди
@@ -61,6 +61,6 @@ void keypress_emulator_c::_task( void ) {
 		}
 
 		// Задержка между эмуляцией нажатия кнопок
-		std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+		std::this_thread::sleep_for( std::chrono::milliseconds( _key_press_delay ) );
 	}
 }

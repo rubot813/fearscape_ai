@@ -106,7 +106,7 @@ bool application::_init( void ) {
 
 void application::_logic( void ) {
 
-	// Взятие игрового поля с экрана и конвертирование в поле ячеек с игнорированием двух линий сверху
+	// Взятие игрового поля с экрана и конвертирование в поле ячеек с игнорированием трех линий сверху
 	// ====
 	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( config->screen_start_field.x, config->screen_start_field.y ),
 	                               sf::Vector2i( config->screen_figure_size, config->screen_figure_size ) );
