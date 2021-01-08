@@ -55,7 +55,7 @@ bool pixel_field_c::set( sf::Vector2i pos, sf::Color col ) {
 	return false;
 }
 
-bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c::settings_s *settings, unsigned up_lines_ignored ) {
+bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, unsigned up_lines_ignored ) {
 	if ( !cell_field ) {
 		std::cout << __PRETTY_FUNCTION__ << " -> nullptr error\n";
 		return 0;
@@ -76,32 +76,39 @@ bool pixel_field_c::convert_to_cellfield( cell_field_c *cell_field, cell_field_c
 			sf::Color pfc = get( sf::Vector2i( x, y ) );
 
 			// Определяю, чем цвет будет в cell_field
-			bool contatins = 0;	// Флаг, что тип ячейки найден по цвету
-			cell_t cfv = 0;	// Все неопределенные ячейки по умолчанию пусты
+			bool contains = 0;	// Флаг, что тип ячейки найден по цвету
+			bool cfv = 0;	// Все неопределенные ячейки по умолчанию пусты
 
-			// Проверка заполненных ячеек
-			auto iter = settings->used_cells.begin( );
-			while( iter != settings->used_cells.end( ) ) {
+			// Проверка по цветам фигуры
+			auto iter = config->figure_colors->begin( );
+			while( iter != config->figure_colors->end( ) ) {
 				if ( *iter == pfc ) {
-					contatins = 1;
+					contains = 1;
 					cfv = 1;
 					break;
 				}
 				++iter;
-			}	// while used cells
+			}	// while figure_colors
 
-			// Если не нашли в used_cells
-			if ( !contatins ) {
-				// Проверка пустых ячеек
-				auto iter = settings->free_cells.begin( );
-				while( iter != settings->free_cells.end( ) ) {
+			// Если не нашли в figure_colors
+			if ( !contains ) {
+				// Проверка по цветам фона
+				auto iter =  config->back_colors->begin( );
+				while( iter !=  config->back_colors->end( ) ) {
 					if ( *iter == pfc ) {
-						contatins = 1;
+						contains = 1;
 						break;
 					}
 					++iter;
-				}	// while free cells
+				}	// while back_colors
 			}	// ifn contains
+
+			/*
+			if ( !contains )
+				std::cout << "Cannot convert color " << ( unsigned )pfc.r << " " <<
+														( unsigned )pfc.g << " " <<
+													( unsigned )pfc.b << "\n";
+			*/
 
 			// Установка типа ячейки
 			cell_field->set( sf::Vector2i( x, y ), cfv );

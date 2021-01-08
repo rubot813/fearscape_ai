@@ -59,6 +59,6 @@ void keypress_emulator_c::_task( void ) {
 		}
 
 		// Задержка между эмуляцией нажатия кнопок
-		std::this_thread::sleep_for( std::chrono::milliseconds( _key_press_delay ) );
+		std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
 	}
 }

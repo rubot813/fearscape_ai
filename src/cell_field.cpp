@@ -34,7 +34,7 @@ std::size_t cell_field_c::get_count( void ) {
 	return _field_size.x * _field_size.y;
 }
 
-cell_t cell_field_c::get( sf::Vector2i pos ) {
+bool cell_field_c::get( sf::Vector2i pos ) {
 	bool val = false;
 	if ( 	pos.x < _field_size.x && pos.y < _field_size.y &&
 	        pos.x >= 0 && pos.y >= 0 )
@@ -44,7 +44,7 @@ cell_t cell_field_c::get( sf::Vector2i pos ) {
 	return val;
 }
 
-bool cell_field_c::set( sf::Vector2i pos, cell_t val ) {
+bool cell_field_c::set( sf::Vector2i pos, bool val ) {
 	if ( 	pos.x < _field_size.x && pos.y < _field_size.y &&
 	        pos.x >= 0 && pos.y >= 0 ) {
 		_field.at( pos.x + pos.y * _field_size.x ) = val;
@@ -54,7 +54,7 @@ bool cell_field_c::set( sf::Vector2i pos, cell_t val ) {
 	return false;
 }
 
-bool cell_field_c::set( uint8_t id, cell_t val ) {
+bool cell_field_c::set( uint8_t id, bool val ) {
 	if ( id < _field.size( ) ) {
 		_field.at( id ) = val;
 		return true;
@@ -75,8 +75,8 @@ bool cell_field_c::check( sf::Vector2i pos, bool *value ) {
 bool cell_field_c::convert_to_16bit( uint16_t *val ) {
 
 	// Поле должно быть размером 4 x 4
-	if ( _field_size.x != 4 ||
-	        _field_size.y != 4 ) {
+	if (	_field_size.x != 4 ||
+			_field_size.y != 4 ) {
 		std::cout << __PRETTY_FUNCTION__ << " -> error\n";
 		return false;
 	}
