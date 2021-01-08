@@ -45,6 +45,15 @@ class tetris_ai_c {
 			uint8_t						holes_count;	// Количество отверстий
 			std::string					alg_name;		// Имя алгоритма
 			std::chrono::milliseconds	calc_time;		// Длительность работы алгоритма
+
+			ai_debug_data_s( void ) {
+				height.data.clear( );
+				height.valid = false;
+				height_sum = 0;
+				holes_count = 0;
+				alg_name.clear( );
+				calc_time = std::chrono::milliseconds( 0 );
+			}
 		};
 
 		// Алгоритм просто кладет фигуру вниз без стратегии
@@ -55,8 +64,9 @@ class tetris_ai_c {
 		// Для тестов
 		move_variant_s ai_alg_random( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug );
 
-		// Алгоритм просчитывает все варианты постановки фигуры, и ищет наименьший вариант постановки по высоте без создания отверстий
-		// Если такой ход невозможен, возвращает вариант с наименьшей суммой высот высотой
+		// Алгоритм просчитывает все варианты постановки фигуры для всех вращений,
+		// Считает количество очков для каждого варианта постановки используя 4 параметра,
+		// Сортирует по количеству очков и выдает наилучший вариант
 		move_variant_s ai_alg_bm( cell_field_c *cell_field, figure_c *figure, ai_debug_data_s *debug );
 
 	private:
@@ -84,8 +94,11 @@ class tetris_ai_c {
 		// Метод считает количество заполненных горизонтальных линий в заданном поле
 		uint8_t _calculate_lines( cell_field_c *cell_field );
 
-		// Метод возвращает сумму высот заданного поля
+		// Метод абсолютное значение ( сумму высот ) заданной высоты
 		std::size_t	_calculate_height_sum( height_s *height );
+
+		// Метод возвращает неровомерность поля
+		std::size_t	_calculate_bumpiness( height_s *height );
 };
 
 #endif // TETRIS_AI_HPP

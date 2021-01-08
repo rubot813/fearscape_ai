@@ -8,9 +8,9 @@ const uint16_t figure_c::_cf_bitfield_rotation[ 7 ][ 4 ] = {
 	{ 1808, 8800, 18176, 12832 },	// J
 	{ 1856, 25120, 5888, 8752 },	// L
 	{ 1632, 1632, 1632, 1632 },		// O
-	{ 864, 1122, 54, 1122 },		// S	check
+	{ 864, 1122, 864, 561 },		// S
 	{ 114, 610, 624, 562 },			// T
-	{ 1584, 306, 99, 612 }			// Z	check
+	{ 1584, 9792, 25344, 4896 }		// Z
 };
 
 figure_c::figure_c( void ) {
@@ -39,7 +39,6 @@ void figure_c::set_rotation( figure_c::rotation_e rot ) {
 figure_c::rotation_e figure_c::get_rotation( void ) {
 	return _rotation;
 }
-
 
 bool figure_c::set_from_cell_field( cell_field_c *cell_field, cell_field_c::settings_s *settings ) {
 	if ( !cell_field ) {
@@ -170,20 +169,25 @@ bool figure_c::is_can_place( cell_field_c *cell_field, sf::Vector2i position ) {
 	for ( uint8_t x = 0; x < figure_size_x_c; x++ ) {
 		for ( uint8_t y = 0; y < figure_size_y_c; y++ ) {
 			// Проверка, занята ли ячейка фигуры
-			bool figure_check = 0;
-			if ( figure_cf.check( sf::Vector2i( x, y ), &figure_check ) ) {
-				// Ячейка существует и занята
-				if ( figure_check ) {
-					// Проверка, существует и занята ли ячейка на поле
-					sf::Vector2i pos = sf::Vector2i( x + position.x, y + position.y );
-					bool field_check = 0;
-					if ( cell_field->check( pos, &field_check ) ) {
-						// Ячейка существует и занята = выход из цикла for по y
-						if ( field_check ) {
+			bool figure_value = 0;
+			if ( figure_cf.check( sf::Vector2i( x, y ), &figure_value ) ) {
+				// Ячейка фигуры существует и занята
+				if ( figure_value ) {
+					sf::Vector2i pos = sf::Vector2i( x + position.x, y + position.y );	// Позиция ячейки на поле
+					bool field_value = 0;												// Значение ячейки
+					bool field_check = cell_field->check( pos, &field_value );			// Флаг существования ячейки
+					// Если ячейка существует
+					if ( field_check ) {
+						// Если ячейка занята = положить не можем
+						if ( field_value ) {
 							ok_flag = 0;
 							break;
 						}
-					}	// field check
+					} else {
+						// Если ячейка не существует = положить не можем
+						ok_flag = 0;
+						break;
+					}
 				}	// figure check
 			} // figure check
 		}	// for y
@@ -200,19 +204,17 @@ bool figure_c::place_to_cellfield( cell_field_c *cell_field, int8_t hor_position
 	cell_field_c cf_buffer = *cell_field;
 
 	// Проход по полю сверху вниз
-	for ( uint8_t y = 1; y < field_size_y_c + 4; y++ ) {
+	for ( uint8_t y = 1; y < field_size_y_c + 2; y++ ) {
 		// Если не можем расположить фигуру в данном месте
 		if ( !is_can_place( cell_field, sf::Vector2i( hor_position, y ) ) ) {
+			// std::cout << "Cannot place on " << ( signed )hor_position << ", " << ( unsigned )y << "( try to apply to " << ( unsigned )y - 1 << "\n";
 			if ( apply_to_cellfield( cell_field,  sf::Vector2i( hor_position, y - 1 ) ) ) {
+				// std::cout << "Apply to cellfield ok!\n";
 				ok_flag = 1;
 				break;
-			} /*else
-				std::cout << "Exit 0\n";*/
-		} /*else
-			std::cout << "Exit 1\n";*/
-		// else field is full
+			}
+		} // else field is full
 	}	// for
-
 	return ok_flag;
 }
 

@@ -5,8 +5,8 @@
 #include <SFML/Graphics/Color.hpp>
 
 // Размеры поля
-const unsigned	field_size_x_c		= 10;	// Горизонтальное
-const unsigned	field_size_y_c		= 20;	// Вертикальное
+const unsigned	field_size_x_c	= 10;	// Горизонтальное
+const unsigned	field_size_y_c	= 20;	// Вертикальное
 
 // Размеры превью фигуры ( не менять, описаны в вики )
 const unsigned	figure_size_x_c	= 4;
@@ -35,7 +35,7 @@ const uint8_t	figure_start_position_y	= 3;
 
 // Время удержания кнопки при эмуляции нажатия,
 // а также время между нажатиями кнопок
-const unsigned	key_press_timeout_msec	= 75;
+const unsigned	key_press_timeout_msec	= 40;
 
 // Имя конфиг - файла, обязательно в кодировке CP-1251 ( Windows-1251 )
 const std::string config_file_name = "config.txt";

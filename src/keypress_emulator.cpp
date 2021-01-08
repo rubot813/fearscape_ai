@@ -31,7 +31,7 @@ void keypress_emulator_c::add_keypress_to_queue( tetris_ai_c::move_variant_s *mo
 	}
 
 	// Опускание блока на поле
-	// _key_queue.push( VK_SPACE );
+	_key_queue.push( VK_SPACE );
 
 	_thread_mutex.unlock( );
 }
