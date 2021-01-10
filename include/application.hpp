@@ -68,7 +68,6 @@ class application {
 		// Переменные фигуры
 		// Текущая фигура
 		pixel_field_c		*_current_figure_pf;	// Цвета
-		cell_field_c		*_current_figure_cf;	// Значения ячеек
 
 		// Предыдущая фигура
 		pixel_field_c		*_previous_figure_pf;	// Цвета

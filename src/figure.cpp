@@ -13,6 +13,19 @@ const uint16_t figure_c::_cf_bitfield_rotation[ 7 ][ 4 ] = {
 	{ 1584, 9792, 25344, 4896 }		// Z
 };
 
+// Инициализация таблицы цветов для фигур
+// Используется в create_from_pixel_field_table
+// Данный набор цветов сделан для Worldwide tetris
+static const sf::Color _color_type_table_wwc[ 7 ] = {
+	sf::Color( 42, 255, 255 ),	// I
+	sf::Color( 42, 42, 255 ),	// J
+	sf::Color( 255, 165, 0 ),	// L
+	sf::Color( 255, 255, 42 ),	// O
+	sf::Color( 42, 255, 42 ),	// S
+	sf::Color( 255, 42, 255 ),	// T
+	sf::Color( 255, 42, 42 )	// Z
+};
+
 figure_c::figure_c( void ) {
 	_type = figure_c::unknown;
 	_rotation = figure_c::rt_standart;
@@ -40,7 +53,7 @@ figure_c::rotation_e figure_c::get_rotation( void ) {
 	return _rotation;
 }
 
-bool figure_c::set_from_cell_field( cell_field_c *cell_field ) {
+bool figure_c::create_from_cell_field( cell_field_c *cell_field ) {
 	if ( !cell_field ) {
 		std::cout << __FUNCTION__ << " -> null error\n";
 		return 0;
@@ -64,6 +77,45 @@ bool figure_c::set_from_cell_field( cell_field_c *cell_field ) {
 			}
 	}
 
+	return ( _type != figure_c::unknown );
+}
+
+bool figure_c::create_from_pixel_field_table( pixel_field_c *pixel_field ) {
+	if ( !pixel_field ) {
+		std::cout << __FUNCTION__ << " -> null error\n";
+		return 0;
+	}
+
+	sf::Vector2i pf_size = pixel_field->get_size( );
+	if ( pf_size.x != 4 || pf_size.y != 4 ) {
+		std::cout << __FUNCTION__ << " -> wrong size error\n";
+		return 0;
+	}
+
+	// Для последующих проверок
+	_type = figure_c::unknown;
+
+	// Фоновый цвет. Следует изменить, если фон иной
+	// или убрать, если на фоне изображение
+	sf::Color back_color = sf::Color( 0, 0, 0 );
+
+	// Поиск цвета, который содержится в таблице и в конфиге config_figure_colors
+	for ( uint8_t x = 0; x < config->figure_cell_size.x; x++ ) {
+		for ( uint8_t y = 0; y < config->figure_cell_size.y; y++ ) {
+			// Найден цвет, отличный от фонового
+			sf::Color pfc = pixel_field->get( sf::Vector2i( x, y ) );
+			if ( pfc != back_color ) {
+				// Проход по цветам конфига. Блять, когда завезете адекватное получение индекса из foreach? C++11 же поддерживается
+				for ( std::size_t index = 0; index < config->figure_colors->size( ); index++ )
+					if ( config->figure_colors->at( index ) == pfc ) {
+						_type = static_cast< figure_c::type_e >( index );
+						break;
+					}
+			}	// if color match
+		}	// for y
+		if ( _type != figure_c::unknown )
+			break;
+	}	// for x
 	return ( _type != figure_c::unknown );
 }
 

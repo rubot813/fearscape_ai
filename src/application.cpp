@@ -37,7 +37,6 @@ application::~application( void ) {
 	delete _sf_render_window;
 	delete _pf;
 	delete _cf;
-	delete _current_figure_cf;
 	delete _current_figure_pf;
 	delete _previous_figure_cf;
 	delete _previous_figure_pf;
@@ -84,7 +83,7 @@ bool application::_init( void ) {
 	// Создание своего окна
 	unsigned win_size_x = 215;
 	unsigned win_size_y = 400;
-	_sf_render_window = new sf::RenderWindow( sf::VideoMode( win_size_x, win_size_y ), "Fearscape AI gen 1", sf::Style::Titlebar | sf::Style::Close );
+	_sf_render_window = new sf::RenderWindow( sf::VideoMode( win_size_x, win_size_y ), "Fearscape AI gen 2", sf::Style::Titlebar | sf::Style::Close );
 	_sf_render_window->setFramerateLimit( 15 );
 
 	// Цвет фона
@@ -94,7 +93,6 @@ bool application::_init( void ) {
 	_cf = new cell_field_c( sf::Vector2i( config->field_size.x, config->field_size.y ) );
 
 	_current_figure_pf = new pixel_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
-	_current_figure_cf = new cell_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
 
 	_previous_figure_pf = new pixel_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
 	_previous_figure_cf = new cell_field_c( sf::Vector2i( config->figure_cell_size.x, config->figure_cell_size.y ) );
@@ -131,7 +129,7 @@ void application::_logic( void ) {
 		_previous_figure_pf->convert_to_cellfield( _previous_figure_cf );	// bool
 
 		// Если фигура успешно определена по полю ячеек
-		if ( _figure->set_from_cell_field( _previous_figure_cf ) ) {
+		if ( _figure->create_from_cell_field( _previous_figure_cf ) ) {
 
 			// Определение перемещения и вращения фигуры по одному из алгоритмов AI
 			_move_variant	= _tetris_ai->ai_alg_bm( _cf, _figure, &_ai_debug_data );
@@ -178,12 +176,12 @@ void application::_render( void ) {
 		}
 
 	// Render figure value
-	buf_str = "value: ";
+	buf_str = "prev fig: ";
 	buf_str += _figure->get_type_char( );
 	_render_text( sf::Vector2f( 9.0f, 212.0f ), buf_str );
 
 	// Render previous figure
-	_render_text( sf::Vector2f( 9.0f, 225.0f ), "prev figure:" );
+	_render_text( sf::Vector2f( 9.0f, 225.0f ), "curr figure:" );
 	_sf_rect_shape->setSize( sf::Vector2f( 10.0f, 10.0f ) );
 	for ( int x = 0; x < config->figure_cell_size.x; x++ )
 		for ( int y = 0; y < config->figure_cell_size.y; y++ ) {
