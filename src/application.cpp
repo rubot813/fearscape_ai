@@ -81,9 +81,7 @@ bool application::_init( void ) {
 		ok_flag = 0;
 
 	// Создание своего окна
-	unsigned win_size_x = 215;
-	unsigned win_size_y = 400;
-	_sf_render_window = new sf::RenderWindow( sf::VideoMode( win_size_x, win_size_y ), "Fearscape AI gen 2", sf::Style::Titlebar | sf::Style::Close );
+	_sf_render_window = new sf::RenderWindow( sf::VideoMode( 215, 400 ), "Fearscape AI gen 3", sf::Style::Titlebar | sf::Style::Close );
 	_sf_render_window->setFramerateLimit( 15 );
 
 	// Цвет фона
@@ -109,11 +107,11 @@ bool application::_init( void ) {
 
 void application::_logic( void ) {
 
-	// Взятие игрового поля с экрана и конвертирование в поле ячеек с игнорированием двух линий сверху
+	// Взятие игрового поля с экрана и конвертирование в поле ячеек с игнорированием трех линий сверху
 	// ====
 	_fill_pixel_field_from_screen( _pf,	sf::Vector2i( config->screen_start_field.x, config->screen_start_field.y ),
 	                               sf::Vector2i( config->screen_figure_size, config->screen_figure_size ) );
-	bool field_convert = _pf->convert_to_cellfield( _cf, 2 );
+	bool field_convert = _pf->convert_to_cellfield( _cf, 3 );
 	// ====
 
 	// Взятие поля следующей фигуры с экрана
@@ -123,7 +121,7 @@ void application::_logic( void ) {
 
 	// Если изменилась следующая фигура и успешно конвертировали поле,
 	//  значит нужно делать ход по предыдущей
-	if ( *_current_figure_pf != *_previous_figure_pf && field_convert ) {
+	if ( *_current_figure_pf != *_previous_figure_pf && field_convert && !_keypress_emulator->get_keyqueue_count( ) ) {
 
 		// Получение поля ячеек
 		_previous_figure_pf->convert_to_cellfield( _previous_figure_cf );	// bool

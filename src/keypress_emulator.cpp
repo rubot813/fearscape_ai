@@ -46,14 +46,14 @@ std::size_t keypress_emulator_c::get_keyqueue_count( void ) {
 
 void keypress_emulator_c::_task( void ) {
 	while( 1 ) {
-		// Если есть кнопки
+		// Если есть кнопки для эмуляции
 		if ( _key_queue.size( ) ) {
 			// Беру код кнопки
 			WPARAM key = _key_queue.front( );
 
 			// Эмуляция нажатия и отпускания кнопок
 			SendMessage( _window_handle, WM_KEYDOWN, key, 0 );
-			std::this_thread::sleep_for( std::chrono::milliseconds( _key_press_delay ) );
+			std::this_thread::sleep_for( std::chrono::milliseconds( key == VK_SPACE ? ( _key_press_delay / 2 ) : _key_press_delay ) );
 			SendMessage( _window_handle, WM_KEYUP, key, 0 );
 
 			// Удаляю кнопку из очереди
@@ -61,6 +61,6 @@ void keypress_emulator_c::_task( void ) {
 		}
 
 		// Задержка между эмуляцией нажатия кнопок
-		std::this_thread::sleep_for( std::chrono::milliseconds( 10 ) );
+		std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
 	}
 }

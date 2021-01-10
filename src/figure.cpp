@@ -334,9 +334,6 @@ char figure_c::get_type_char( void ) {
 			c = 'u';
 			break;
 		}
-		default :
-			std::cout << __FUNCTION__ << " -> switch error\n";
-
 	}	// switch
 	return c;
 }
